@@ -2,16 +2,6 @@ import wollok.game.*
 import battlecity.*
 import bala.*
 
-object indicadorDeVelocidad {
-    method position() {
-        return game.at(game.width() - 5, game.height() - 1)
-    }
-
-    method text() {
-        return "Intervalo de tiempo: " + juegoBattleCity.intervaloDeTiempo() + " ms"
-    }
-}
-
 object tanque {
     var direccion = sinDireccion
     var posicion = new Position(x=4, y=1)
@@ -70,7 +60,8 @@ object tanque {
     }
 
     method dispararBala(){
-        const bala = new Bala(direccion = self.direccion(), posicion=new Position(x=self.position().x() , y=self.position().y()))
+        const bala = new Bala(direccion = self.direccion(), posicion = self.direccion().siguientePosicion(self.position()))
+        game.sound("tanque_disparando.wav").play()
         bala.dibujarBala()
         bala.detectarColision()
         game.onTick(100, "desplazarBala", {bala.move()})

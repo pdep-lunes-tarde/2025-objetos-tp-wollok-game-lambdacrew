@@ -16,8 +16,12 @@ class Muro {
     }
 
     method teImpactoUnaBala(unaBala) {
-        if(durabilidad > 0) {
+        if(durabilidad > 1) {
             durabilidad = durabilidad - unaBala.fuerza()
+            game.removeVisual(unaBala)
+        }
+        else {
+            game.removeVisual(self)
             game.removeVisual(unaBala)
         }
     }
@@ -25,6 +29,7 @@ class Muro {
     method dibujarMuro(){
         game.addVisual(self)
     }
+
 
 
 }

@@ -25,19 +25,22 @@ object juegoBattleCity {
 
         nivel1.dibujarMapa()
         
+        nivel1.dibujarEnemigos()
         game.addVisual(tanque)
-        game.addVisual(indicadorDeVelocidad)
+
+        nivel1.dibujarDetalles()
 
         game.onCollideDo(tanque, {otro => otro.efecto(tanque)})
+        
         game.onCollideDo(tanque, { otro =>
             otro.noDejarloPasar(tanque)
         })
 
+// WASD - MOVIMIENTO Y DISPARO
+
         keyboard.space().onPressDo {
             tanque.dispararBala()
         }
-
-        
 
         keyboard.right().onPressDo {
             tanque.direccion(derecha)
@@ -79,12 +82,6 @@ object juegoBattleCity {
             tanque.image("tank_down.png")
             tanque.move()
         }
-    }
-
-    method restart() {
-        intervaloDeTiempo = intervaloDeTiempoInicial
-        game.clear()
-        self.configurar()
     }
 
     method jugar() {

@@ -1,5 +1,58 @@
 import powerUps.*
 import tanque.*
+import bala.*
+
+
+class Enemigo {
+    var salud
+    var posicion
+    var direccion
+    var posicion_anterior = new Position()
+
+    method image(){
+        return "tanque_basico.png"
+    }
+    method position(){
+        return posicion
+    }
+
+    method direccion(){
+        return direccion
+    }
+
+    method dibujarTanqueAmenaza(){
+        game.addVisual(self)
+    }
+
+    method recibirDaño(unaBala){
+        salud = salud - unaBala.fuerza()
+    }
+
+    method explotar(){
+        vida_extra.aparecerPowerUp()
+        game.removeVisual(self)
+        game.removeTickEvent("Enemigo disparo")
+
+
+    }
+
+    method dispararBala(){
+        const bala = new Bala(direccion = self.direccion(), posicion = self.direccion().siguientePosicion(self.position()))
+        bala.dibujarBala()
+        bala.detectarColision()
+        game.onTick(100, "desplazarBala", {bala.move()})
+        game.onTick(1000, "borrar bala", {bala.borrarBala()})
+    }
+
+    method teImpactoUnaBala(unaBala){
+        if(salud > 1) {
+            self.recibirDaño(unaBala)
+        }
+        else {
+            self.explotar()
+        }
+    }
+}
 class TanqueEnemigo_Basico{
     var aguanta = 1
     var position = new Position(x = 4, y = 3)
