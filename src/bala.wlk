@@ -29,17 +29,12 @@ class Bala {
 
     }
 
-    method detectarColision(){
-        
-        game.onCollideDo(self, {otro => otro.teImpactoUnaBala(self)})
+    method tuBalaChocoConAlgo(elQueDisparo, unaBala) {
+
+        game.onCollideDo(unaBala, {otro => otro.teImpactoLaBalaDe(elQueDisparo, unaBala)})
     }
 
     method dibujarBala(){
         game.addVisual(self)
-    }
-
-    method borrarBala(){
-        // g ame sound("grabCoin.wav").play()
-        game.removeVisual(self)
     }
 }

@@ -25,62 +25,55 @@ object juegoBattleCity {
 
         nivel1.dibujarMapa()
         
-        nivel1.dibujarEnemigos()
+        // nivel1.dibujarEnemigos()
         game.addVisual(tanque)
 
         nivel1.dibujarDetalles()
 
         game.onCollideDo(tanque, {otro => otro.efecto(tanque)})
+
+        game.onTick(100, "DesplazarBalasTanque", {tanque.balas_que_disparo_el_tanque().forEach({n => n.move()})})
         
         game.onCollideDo(tanque, { otro =>
             otro.noDejarloPasar(tanque)
         })
 
-// WASD - MOVIMIENTO Y DISPARO
-
-        keyboard.space().onPressDo {
-            tanque.dispararBala()
+// DISPARO
+        keyboard.f().onPressDo {
+            tanque.nuevoDispararBala()
         }
-
+// FLECHAS 
         keyboard.right().onPressDo {
-            tanque.direccion(derecha)
-            tanque.image("tank_right.png")
-            tanque.move()
+            tanque.desplazarse(derecha)
         }
-        keyboard.d().onPressDo {
-            tanque.direccion(derecha)
-            tanque.image("tank_right.png")
-            tanque.move()
-        }
+
         keyboard.left().onPressDo {
-            tanque.direccion(izquierda)
-            tanque.image("tank_left.png")
-            tanque.move()
+            tanque.desplazarse(izquierda)
         }
-        keyboard.a().onPressDo {
-            tanque.direccion(izquierda)
-            tanque.image("tank_left.png")
-            tanque.move()
-        }
-        keyboard.up().onPressDo {
-            tanque.direccion(arriba)
-            tanque.image("tank_up.png")
-            tanque.move()
-        }
-        keyboard.w().onPressDo {
-            tanque.direccion(arriba)
-            tanque.image("tank_up.png")
-            tanque.move()
-        }
+
         keyboard.down().onPressDo {
-            tanque.direccion(abajo)
-            tanque.image("tank_down.png")
-            tanque.move()
+            tanque.desplazarse(abajo)
         }
+
+        keyboard.up().onPressDo {
+            tanque.desplazarse(arriba)
+        }
+
+// WASD
+        keyboard.d().onPressDo {
+            tanque.desplazarse(derecha)
+        }
+        
+        keyboard.a().onPressDo {
+            tanque.desplazarse(izquierda)
+        }
+        
+        keyboard.w().onPressDo {
+            tanque.desplazarse(arriba)
+        }
+        
         keyboard.s().onPressDo {
-            tanque.direccion(abajo)
-            tanque.image("tank_down.png")
-            tanque.move()
+            tanque.desplazarse(abajo)
         }
     }
 

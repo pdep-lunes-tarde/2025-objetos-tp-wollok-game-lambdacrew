@@ -4,17 +4,24 @@ import bala.*
 
 object tanque {
     var direccion = sinDireccion
+
     var posicion = new Position(x=4, y=1)
     var posicionAnterior = new Position()
-    var sprite = "tank_up.png"
 
+    var sprite = "tank_up.png"
     var vidas_extras = 3
 
+    const balas_activas_del_tanque = []
+    
     method image(){
         return sprite
     }
 
-    method puedeDisparar() = true
+    method puedeDispararOtra() = balas_activas_del_tanque.size() < 2
+
+    method balas_que_disparo_el_tanque() {
+        return balas_activas_del_tanque
+    }
 
     method posicionAnterior(antiguaPosicion) {
         posicionAnterior = antiguaPosicion
@@ -25,6 +32,7 @@ object tanque {
     }
 
     method image(nuevoSprite){
+
         sprite = nuevoSprite
     }
 
@@ -44,12 +52,16 @@ object tanque {
         return direccion
     }
 
-    method move(){
+    method desplazarse(nuevaDireccion) {
+
         const antiguaPosicion = self.position()
-        const nuevaPosicion = direccion.siguientePosicion(posicion)
+        const nuevaPosicion = nuevaDireccion.siguientePosicion(posicion)
+
+        direccion = nuevaDireccion
+        posicion = self.posicionCorregida(nuevaPosicion)
+        nuevaDireccion.cambiarSprite(self)
 
         self.posicionAnterior(antiguaPosicion)
-        posicion = self.posicionCorregida(nuevaPosicion)
     }
 
     method posicionCorregida(posicionACorregir){
@@ -59,17 +71,22 @@ object tanque {
         return new Position(x = nuevaX, y = nuevaY)
     }
 
-    method dispararBala(){
-        const bala = new Bala(direccion = self.direccion(), posicion = self.direccion().siguientePosicion(self.position()))
-        game.sound("tanque_disparando.wav").play()
-        bala.dibujarBala()
-        bala.detectarColision()
-        game.onTick(100, "desplazarBala", {bala.move()})
-        game.onTick(1000, "borrar bala", {bala.borrarBala()})
+    method nuevoDispararBala(){
+        if(self.puedeDispararOtra()) {
+            const bala = new Bala(direccion = self.direccion(), posicion = self.direccion().siguientePosicion(self.position()))
+
+            balas_activas_del_tanque.add(bala)
+            bala.dibujarBala()
+
+            bala.tuBalaChocoConAlgo(self, bala)
+
+            game.sound("tanque_disparando.wav").play()
+        }
     }
 
-    method teImpactoUnaBala(unaBala){
-        return true
+    method irBorrandoBalas(){
+        const bala_que_encabeza_la_lista = balas_activas_del_tanque.head()
+        balas_activas_del_tanque.remove(bala_que_encabeza_la_lista)
     }
 
     method agarrarPowerUp(poder){
@@ -85,20 +102,32 @@ object izquierda {
     method siguientePosicion(posicion) {
         return posicion.left(1)
     }
+    method cambiarSprite(entidad) {
+        entidad.image("tank_left.png")
+    }
 }
 object abajo {
     method siguientePosicion(posicion) {
         return posicion.down(1)
+    }
+    method cambiarSprite(entidad) {
+        entidad.image("tank_down.png")
     }
 }
 object arriba {
     method siguientePosicion(posicion) {
         return posicion.up(1)
     }
+    method cambiarSprite(entidad) {
+        entidad.image("tank_up.png")
+    }
 }
 object derecha {
     method siguientePosicion(posicion) {
         return posicion.right(1)
+    }
+    method cambiarSprite(entidad) {
+        entidad.image("tank_right.png")
     }
 }
 
@@ -119,5 +148,4 @@ object wraparound {
         }
     }
 }
-
 

@@ -15,16 +15,20 @@ class Muro {
         }
     }
 
-    method teImpactoUnaBala(unaBala) {
+    method teImpactoLaBalaDe(elQueDisparo, unaBala) {
         if(durabilidad > 1) {
             durabilidad = durabilidad - unaBala.fuerza()
             game.removeVisual(unaBala)
+            elQueDisparo.irBorrandoBalas()
         }
         else {
             game.removeVisual(self)
             game.removeVisual(unaBala)
+            elQueDisparo.irBorrandoBalas()
         }
     }
+
+    
 
     method dibujarMuro(){
         game.addVisual(self)
@@ -53,12 +57,13 @@ class Muro_Ladrillos inherits Muro{
 }
 class Muro_Reforzado inherits Muro{
 
-    override method teImpactoUnaBala(unaBala){
+    override method teImpactoLaBalaDe(elQueDisparo, unaBala){
         if (unaBala.rompeMurosReforzados()){
-            super(unaBala)
+            super(elQueDisparo, unaBala)
         }
         else{
             game.removeVisual(unaBala)
+            elQueDisparo.irBorrandoBalas()
         }
     }
 
