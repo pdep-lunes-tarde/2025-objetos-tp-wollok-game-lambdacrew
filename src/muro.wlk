@@ -15,11 +15,14 @@ class Muro {
         }
     }
 
+    method esAtravesable() = durabilidad < 1
+
     method teImpactoLaBalaDe(elQueDisparo, unaBala) {
         if(durabilidad > 1) {
             durabilidad = durabilidad - unaBala.fuerza()
             game.removeVisual(unaBala)
             elQueDisparo.irBorrandoBalas()
+            game.sound("balas_chocando.wav").play()
         }
         else {
             game.removeVisual(self)
@@ -61,10 +64,8 @@ class Muro_Reforzado inherits Muro{
         if (unaBala.rompeMurosReforzados()){
             super(elQueDisparo, unaBala)
         }
-        else{
-            game.removeVisual(unaBala)
-            elQueDisparo.irBorrandoBalas()
-        }
+        elQueDisparo.irBorrandoBalas()
+        game.removeVisual(unaBala)
     }
 
     method image() {
@@ -83,25 +84,13 @@ class Muro_Reforzado inherits Muro{
     }
 }
 
-class Parche_De_Agua {
-    const position
+class Parche_De_Agua inherits Muro {
 
     method image() {
         return "agua.png"
     }
 
-    method position() {
-        return position
-    }
-
-    method noDejarloPasar(unTanque) {
-        const antiguaPosicion = unTanque.posicionAnterior()
-        unTanque.position(antiguaPosicion)
-    }
-
-    method dibujarMuro(){
-        game.addVisual(self)
-    }
+    override method teImpactoLaBalaDe (elQueDisparo, unaBala) {}
 
 }
 
@@ -119,4 +108,8 @@ class Arbustos {
     method dibujarMuro(){
         game.addVisual(self)
     }
+
+    method noDejarloPasar(unTanque){}
+
+    method esAtravesable() = true
 }

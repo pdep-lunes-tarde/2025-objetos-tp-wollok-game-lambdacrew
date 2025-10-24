@@ -2,5 +2,4 @@ import battlecity.juegoBattleCity
 import wollok.game.*
 program juego {
     juegoBattleCity.jugar()
-    
 }
