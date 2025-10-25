@@ -8,11 +8,8 @@ class Muro {
         return position
     }
 
-    method noDejarloPasar(unTanque) {
-        if(durabilidad > 0) {
-            const antiguaPosicion = unTanque.posicionAnterior()
-            unTanque.position(antiguaPosicion)
-        }
+    method restablecerDurabilidad(){
+        durabilidad = 3
     }
 
     method esAtravesable() = durabilidad < 1

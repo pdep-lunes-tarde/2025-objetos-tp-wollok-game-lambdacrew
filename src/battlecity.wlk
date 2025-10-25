@@ -26,20 +26,10 @@ object juegoBattleCity {
     }
     method configurar() {
         
-        nivel1.dibujarMapa()
-
-        game.addVisual(jugador2_tanque)
-        game.addVisual(jugador1_tanque)
+        cargar_nivel.iniciar()
 
         jugador2_tanque.actividad()
         jugador1_tanque.actividad()
-        
-        game.showAttributes(jugador1_tanque)
-
-
-        nivel1.dibujarDetalles()
-
-        nivel1.dibujarHalcones()
 
         game.onTick(60, "DesplazarBalasTanque", {
             jugador1_tanque.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(jugador1_tanque)})
@@ -48,14 +38,6 @@ object juegoBattleCity {
         game.onTick(60, "DesplazarBalasTanque", {
             jugador2_tanque.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(jugador2_tanque)})
             })
-
-         game.onCollideDo(jugador2_tanque, { otro =>
-            otro.noDejarloPasar(jugador2_tanque)
-         })
-
-        game.onCollideDo(jugador1_tanque, { otro =>
-            otro.noDejarloPasar(jugador1_tanque)
-        })
 
     }
 
@@ -66,27 +48,37 @@ object juegoBattleCity {
         game.start()
     }
 
+    method reset() {
+        game.clear()
+        restaurar_mapa.regenerar()
+        self.configurar()
+    }
 
 }
 
-object cargar_mapa {
+object restaurar_mapa {
 
-    method carga()
+    method regenerar()
+    {
+        nivel1.reHacerMuros()
+        nivel1.reubicarHalcon()
+    }
+
+}
+
+object cargar_nivel {
+
+    method iniciar()
     {
         nivel1.dibujarMapa()
 
         game.addVisual(jugador2_tanque)
         game.addVisual(jugador1_tanque)
 
-        jugador2_tanque.actividad()
-        jugador1_tanque.actividad()
-
-
         nivel1.dibujarDetalles()
 
-        nivel1.dibujarHalcones()
+        nivel1.dibujarBases()
 
-        jugador2_tanque.actividad()
-        jugador1_tanque.actividad()
+        nivel1.dibujarHalcones()
     }
 }

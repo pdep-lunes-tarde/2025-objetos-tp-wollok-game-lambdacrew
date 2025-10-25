@@ -1,3 +1,4 @@
+import src.tanque.*
 import battlecity.*
 
 class Bala {
@@ -30,8 +31,7 @@ class Bala {
     method moverBalasDe(unTanque){
 
         if (limitesMapa.teSalisteDeLosLimitesDelMapa(self)){
-            unTanque.irBorrandoBalas()
-            game.removeVisual(self)
+            borrar_balas.bala_logro_su_objetivo(unTanque, self)
         }
 
         const nuevaPosicion = direccion.siguientePosicion(posicion)
@@ -45,11 +45,10 @@ class Bala {
     }
 
     method teImpactoLaBalaDe(elQueDisparo, unaBala){
-        elQueDisparo.irBorrandoBalas()
-        game.removeVisual(unaBala)
+        borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
         game.removeVisual(self)
         game.sound("balas_chocando.wav").play()
-    }
+    } 
 
     method dibujarBala(){
         direccion.imagenBala()
@@ -64,5 +63,12 @@ object limitesMapa {
     method teSalisteDeLosLimitesDelMapa (elemento) = 
         elemento.position().x() > juegoBattleCity.ancho() || elemento.position().x() < 0 ||
         elemento.position().y() > juegoBattleCity.alto() || elemento.position().y() < 0
+}
 
+object borrar_balas {
+
+    method bala_logro_su_objetivo(elQueDisparo, unaBala){
+        elQueDisparo.irBorrandoBalas()
+        game.removeVisual(unaBala)
+    }
 }
