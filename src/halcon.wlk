@@ -70,7 +70,7 @@ class Halcon {
         game.addVisual(self)
     }
 
-    method esAtravesable() = true
+    method esAtravesable(entidad) = true
 
     method fueUrtadoPor(unTanque) {
         if (self.lePerteneceA() != unTanque && !capturada) {

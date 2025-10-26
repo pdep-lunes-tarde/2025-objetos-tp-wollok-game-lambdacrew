@@ -29,7 +29,7 @@ class Enemigo {
     }
 
     method explotar(){
-        vida_extra.aparecerPowerUp()
+       // vida_extra.aparecerPowerUp()
         game.removeVisual(self)
         game.removeTickEvent("Enemigo disparo")
 
@@ -37,11 +37,11 @@ class Enemigo {
     }
 
     method dispararBala(){
-        const bala = new Bala(direccion = self.direccion(), posicion = self.direccion().siguientePosicion(self.position()))
-        bala.dibujarBala()
-        bala.detectarColision()
-        game.onTick(100, "desplazarBala", {bala.move()})
-        game.onTick(1000, "borrar bala", {bala.borrarBala()})
+        // const bala = new Bala(direccion = self.direccion(), posicion = self.direccion().siguientePosicion(self.position()))
+        // bala.dibujarBala()
+        // bala.detectarColision()
+        // game.onTick(100, "desplazarBala", {bala.move()})
+        // game.onTick(1000, "borrar bala", {bala.borrarBala()})
     }
 
     method teImpactoUnaBala(unaBala){
@@ -72,7 +72,7 @@ class TanqueEnemigo_Basico{
 
     method teImpactoUnaBala(unaBala){
         game.removeVisual(self)
-        vida_extra.aparecerPowerUp()
+        // vida_extra.aparecerPowerUp()
     }
 
     method paraDondeIr(){

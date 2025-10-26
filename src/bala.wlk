@@ -1,16 +1,21 @@
 import src.tanque.*
 import battlecity.*
+import movimiento.*
 
 class Bala {
     var posicion
     var fuerza = 1
     var rompeMurosReforzados = false
+    var lePerteneceA
+    const acuatico = true
 
     const direccion
 
     method image(){
         return direccion.imagenBala()
     }
+
+    method irPorAgua() = acuatico
 
     method position() {
         return posicion
@@ -34,6 +39,10 @@ class Bala {
             borrar_balas.bala_logro_su_objetivo(unTanque, self)
         }
 
+        if(!permitir_movimiento.puedoMovermeEnEstaDireccion(self, self.orientacion())){
+            self.tuBalaChocoConAlgo(lePerteneceA, self)
+        }
+
         const nuevaPosicion = direccion.siguientePosicion(posicion)
         posicion = nuevaPosicion
         
@@ -55,7 +64,13 @@ class Bala {
         game.addVisual(self)
     }
 
-    method esAtravesable() = true
+    method esAtravesable(entidad) = true
+
+    method efecto(unTanque) {}
+    method seguirA(unTanque) {}
+    method fueUrtadoPor(unTanque) {}
+    method recuperada(unTanque) {}
+    method dejarBanderaEnBase(unTanque) {}
 }
 
 object limitesMapa {
@@ -68,7 +83,7 @@ object limitesMapa {
 object borrar_balas {
 
     method bala_logro_su_objetivo(elQueDisparo, unaBala){
-        elQueDisparo.irBorrandoBalas()
+        elQueDisparo.irBorrandoBalas(unaBala)
         game.removeVisual(unaBala)
     }
 }

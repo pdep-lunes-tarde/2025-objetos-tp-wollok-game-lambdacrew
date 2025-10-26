@@ -3,6 +3,7 @@ import battlecity.*
 import bala.*
 import halcon.*
 import mapa.*
+import movimiento.*
 
 class TanqueJugador {
 
@@ -10,6 +11,9 @@ class TanqueJugador {
     var sprite = "tank_up.png"
     var rondas_ganadas = 0
     var respawn = true
+    var inmune = false
+
+    var acuatico = false
 
     var posicion
 
@@ -19,6 +23,8 @@ class TanqueJugador {
     var lleva_una_bandera = false
     
     const balas_activas_del_tanque = []
+    var cargador = 1
+    var velocidad_balas = 10
 
     // SPRITE TANQUES 
     method image(){
@@ -27,6 +33,13 @@ class TanqueJugador {
 
     method image(nuevoSprite){
         sprite = nuevoSprite
+    }
+    // ANDAR POR AGUA
+
+    method irPorAgua() = acuatico
+
+    method habilitarIrPorAgua(valor){
+        acuatico = valor
     }
     // POSICIONAMIENTO Y MOVIMIENTO EN EL TABLERO
     method position(){
@@ -45,9 +58,9 @@ class TanqueJugador {
         return direccion
     }
 
-    method puedoMovermeEnEstaDireccion (unaOrientacion) {
-        return game.getObjectsIn(unaOrientacion.siguientePosicion(posicion)).all {unObj => unObj.esAtravesable()}
-    }
+    /* method puedoMovermeEnEstaDireccion (unaOrientacion) {
+        return game.getObjectsIn(unaOrientacion.siguientePosicion(posicion)).all {unObj => unObj.esAtravesable(self)}
+    } */
 
     method posicionCorregida(posicionACorregir){
         const nuevaY = wraparound.aplicarA(posicionACorregir.y(), 0, juegoBattleCity.alto())
@@ -65,20 +78,29 @@ class TanqueJugador {
         direccion = unaOrientacion
     }
     // ATAQUE DISPARAR TANQUES
-    method puedeDispararOtra() = balas_activas_del_tanque.size() < 1
+    method puedeDispararOtra() = balas_activas_del_tanque.size() < cargador
+
+    method aumentarMunicionEn(valor){
+        cargador = valor
+    }
+
+    method velocidad_balas() = velocidad_balas
+
+    method aumentarVelocidadBala(nuevaVelocidad){
+        velocidad_balas = nuevaVelocidad
+    }
 
     method balas_que_disparo_el_tanque() {
         return balas_activas_del_tanque
     }
 
-    method irBorrandoBalas(){
-        const bala_que_encabeza_la_lista = balas_activas_del_tanque.head()
-        balas_activas_del_tanque.remove(bala_que_encabeza_la_lista)
+    method irBorrandoBalas(unaBala){
+        balas_activas_del_tanque.remove(unaBala)
     } 
 
     method disparar_de_tanques(){
         if(self.puedeDispararOtra()) {
-            const bala = new Bala(direccion = self.direccion(), posicion = self.position())  /* self.direccion().siguientePosicion(self.position() */
+            const bala = new Bala(lePerteneceA = self, direccion = self.direccion(), posicion = self.position())  /* self.direccion().siguientePosicion(self.position() */
 
             balas_activas_del_tanque.add(bala)
             bala.dibujarBala()
@@ -89,13 +111,28 @@ class TanqueJugador {
     }
     // RESPAWN 
     method aRespawnear(){
+        game.addVisual(self)
         posicion = spawn
-        game.sound("balas_chocando.wav").play()
     }
 
     method opcion_respawn(valor){
         respawn = valor
     }
+
+    method normalizar(){
+        inmune = false
+        acuatico = false
+        cargador = 1
+        velocidad_balas = 60
+        posicion = spawn
+    }
+    // PORTAR ESCUDO
+
+    method llevarEscudo(){
+        game.whenCollideDo(self, {unEscudo => unEscudo.seguirA(self)})
+    }
+
+    method inmune() = inmune
     // ROBAR, RECUPERAR Y SOLTAR BANDERA (HALCON)
 
     method banderaQueLleva() = banderaQueLleva
@@ -140,7 +177,7 @@ class TanqueJugador {
         rondas_ganadas = rondas_ganadas + 1
     }
 
-    method esAtravesable() = false
+    method esAtravesable(entidad) = false
 
     method explotar_tanque(unTanque){
         game.removeVisual(unTanque)
@@ -149,16 +186,17 @@ class TanqueJugador {
 
     // COLISION DE BALA CON UN TANQUE - SI DEBE RESPAWNEAR y SOLTAR BANDERA o DESTRUIRSE
     method teImpactoLaBalaDe(elQueDisparo, unaBala) {
-
-        if (self != elQueDisparo){
+        if (self != elQueDisparo && !inmune){
             if (respawn) {
                 if (lleva_una_bandera){
                     self.soltar_bandera()
-                    self.aRespawnear()
+                    game.schedule(1500, {self.aRespawnear()})
                     borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
                 }
 
-                self.aRespawnear()
+                self.explotar_tanque(self)
+                game.schedule(1500, {self.aRespawnear()})
+                self.normalizar()
                 borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
             }            
             else {  
@@ -174,11 +212,26 @@ class TanqueJugador {
                     reiniciar_mapa.recargar_escena(nivel1)
                 }       
             }
-        }          
+        }
+        borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)          
+    }
+
+    // REGOCER ITEMS
+
+    method agarrarItem(){
+        game.onCollideDo(self, {n => n.efecto(self)})
+    }
+
+    // SER INMUNE 
+
+    method cambiarEstadoInmunidad(estado){
+        inmune = estado
     }
 }
        
 object jugador2_tanque inherits TanqueJugador (posicion = new Position (x = 6, y = 6)) {
+
+    var controles = normal
 
     method actividad(){
             keyboard.p().onPressDo {
@@ -208,6 +261,10 @@ object jugador2_tanque inherits TanqueJugador (posicion = new Position (x = 6, y
             self.urtarBandera()
             self.recuperarBandera()
             self.dejarBanderaEnBase()
+    }
+
+    method cambiar (nuevoControles) {
+        controles = nuevoControles
     }
 }
 
@@ -242,89 +299,54 @@ object jugador1_tanque inherits TanqueJugador (posicion = new Position (x = 3, y
             self.urtarBandera()
             self.recuperarBandera()
             self.dejarBanderaEnBase()
+            self.agarrarItem()
+            self.llevarEscudo()       
+    }
+
+    // NO SE PUDO IMPLEMENTAR
+    method velocidadBalas() {
+        game.onTick(self.velocidad_balas(), "DesplazarBalasTanque1", {
+            self.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(self)})
+            })
+    }
+
+    // NO SE PUDO IMPLEMENTAR
+    method detenerTick() {
+        game.removeTickEvent("DesplazarBalasTanque1")
     }
 }
 
-object izquierda {
-    method siguientePosicion(posicion) {
-        return posicion.left(1)
-    }
 
-    method imagenBala() = "bala_tanque_left.png"
-}
-object abajo {
-    method siguientePosicion(posicion) {
-        return posicion.down(1)
-    }
 
-    method imagenBala() = "bala_tanque_down.png"
-}
-object arriba {
-    method siguientePosicion(posicion) {
-        return posicion.up(1)
-    }
+object normal {
+    method movimientos(){
+            keyboard.p().onPressDo {
+            jugador2_tanque.disparar_de_tanques()
+            }
 
-    method imagenBala() = "bala_tanque_up.png"
-}
-object derecha {
-    method siguientePosicion(posicion) {
-        return posicion.right(1)
-    }
+            keyboard.right().onPressDo {
+            jugador2_tanque.nuevo_mover_tanque(derecha)
+            jugador2_tanque.image("tankP2_right.png")
+            }
 
-    method imagenBala() = "bala_tanque.png"
-}
+            keyboard.left().onPressDo {
+            jugador2_tanque.nuevo_mover_tanque(izquierda)
+            jugador2_tanque.image("tankP2_left.png")
+            }
 
-object sinDireccion {
-    method siguientePosicion(posicion) {
-        return posicion
-    }
-}
+            keyboard.down().onPressDo {
+            jugador2_tanque.nuevo_mover_tanque(abajo)
+            jugador2_tanque.image("tankP2_down.png")
+            }
 
-object wraparound {
-    method aplicarA(numero, topeInferior, topeSuperior) {
-        if(numero < topeInferior) {
-            return topeSuperior
-        } else if(numero > topeSuperior) {
-            return topeInferior
-        } else {
-            return numero
-        }
+            keyboard.up().onPressDo {
+            jugador2_tanque.nuevo_mover_tanque(arriba)
+            jugador2_tanque.image("tankP2_up.png")
+            }
+
+            jugador2_tanque.urtarBandera()
+            jugador2_tanque.recuperarBandera()
+            jugador2_tanque.dejarBanderaEnBase()
     }
 }
 
-class Base {
-    var ubicacion
-    const lePerteneceA
-
-    method imagen(){}
-
-    method position() = ubicacion
-
-    method position(aguila) {
-        ubicacion = aguila.origen_bandera()
-    }
-
-    method lePerteneceA() = lePerteneceA
-
-    method dibujarBases() {
-        game.addVisual(self)
-    }
-
-    method dejarBanderaEnBase(unTanque) {
-
-        if (lePerteneceA == unTanque) {
-        unTanque.banderaQueLleva().fueCapturada()
-        unTanque.soltar_bandera()
-        unTanque.banderaQueLleva().position(ubicacion)
-        }
-    }
-
-    method esAtravesable() = true
-}
-
-object permitir_movimiento{
-
-    method puedoMovermeEnEstaDireccion (entidad, unaOrientacion) {
-        return game.getObjectsIn(unaOrientacion.siguientePosicion(entidad.position())).all {unObj => unObj.esAtravesable()}
-    }
-}
