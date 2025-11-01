@@ -44,27 +44,17 @@ class Halcon {
 
     }
 
-   /* method destruyeron_el_aguila_de(aguila, elQueDisparo){ // ANTIGUA FORMA DE JUGAR - DESTRUIR EL AGUILA ENTRE LOS JUGADORES
-
-        if (verificar_finalizacion_partida.gano_alguien()) {
-            verificar_finalizacion_partida.mensaje_victoria()
+    method teChocoUnTanque (tanque) {
+        if (lePerteneceA != tanque && !capturada) {
+            tanque.agarrarBandera(self)
+            game.removeVisual(self)
         }
-        else {
-            if (aguila.lePerteneceA() != elQueDisparo) {
-                elQueDisparo.ganar_ronda()
-                gameOver.mensaje_de_ronda_terminada(aguila.lePerteneceA())
-                game.say(elQueDisparo, elQueDisparo.rondas_ganadas())
-                gameOver.partidaFinalizada()
-                reiniciar_mapa.recargar_escena(nivel1)  
-            }
-            else {
-                gameOver.destruiste_tu_propia_aguila()
-                gameOver.partidaFinalizada()
-
-                reiniciar_mapa.recargar_escena(nivel1)
-            }
-        }
-    } */
+        else if (lePerteneceA == tanque) {
+            posicion = origen_bandera
+            capturada = false
+            tanque.opcion_respawn(true)
+        } 
+    }
 
     method dibujarHalcon(){
         game.addVisual(self)

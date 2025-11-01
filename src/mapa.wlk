@@ -8,13 +8,11 @@ import base.*
 object nivel1{
     const conjuntoMuros = [
           new Muro_Ladrillos(position = new Position(x = 0, y = 2))
-        , new Muro_Ladrillos(position = new Position(x = 1, y = 2))
         , new Muro_Ladrillos(position = new Position(x = 2, y = 2))
         , new Muro_Ladrillos(position = new Position(x = 2, y = 0))
         , new Muro_Ladrillos(position = new Position(x = 2, y = 1))
 
         , new Muro_Ladrillos(position = new Position(x = 8, y = 9))
-        , new Muro_Ladrillos(position = new Position(x = 8, y = 8))
         , new Muro_Ladrillos(position = new Position(x = 8, y = 7))
         , new Muro_Ladrillos(position = new Position(x = 9, y = 7))
         , new Muro_Ladrillos(position = new Position(x = 10, y = 7))
@@ -29,7 +27,6 @@ object nivel1{
         , new Muro_Ladrillos(position = new Position(x = 10, y = 4))
 
         , new Muro_Ladrillos(position = new Position(x = 5, y = 9))
-        , new Muro_Ladrillos(position = new Position(x = 5, y = 8))
         , new Muro_Ladrillos(position = new Position(x = 5, y = 6))
         , new Muro_Ladrillos(position = new Position(x = 5, y = 3))
         , new Muro_Ladrillos(position = new Position(x = 5, y = 1))

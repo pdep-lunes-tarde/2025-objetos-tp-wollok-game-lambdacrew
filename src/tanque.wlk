@@ -1,3 +1,4 @@
+import src.powerUps.*
 import wollok.game.*
 import battlecity.*
 import bala.*
@@ -21,10 +22,19 @@ class TanqueJugador {
 
     var banderaQueLleva = null
     var lleva_una_bandera = false
+
+    var controlesInvertidos = false
     
     const balas_activas_del_tanque = []
     var cargador = 1
     var velocidad_balas = 10
+
+
+    method banderaQueLleva() = banderaQueLleva
+
+    method controlesInvertidos(valor) {
+        controlesInvertidos = valor
+    }
 
     // SPRITE TANQUES 
     method image(){
@@ -70,12 +80,19 @@ class TanqueJugador {
     }
 
     method nuevo_mover_tanque(unaOrientacion){
-        if (permitir_movimiento.puedoMovermeEnEstaDireccion(self, unaOrientacion)){
-            const nuevaPosicion = unaOrientacion.siguientePosicion(posicion)
-            posicion = self.posicionCorregida(nuevaPosicion)
-            direccion = unaOrientacion
-        }
         direccion = unaOrientacion
+
+        if (controlesInvertidos) {
+            direccion = unaOrientacion.controlInvertido()
+            
+        }
+
+        if (permitir_movimiento.puedoMovermeEnEstaDireccion(self, direccion)){
+
+            const nuevaPosicion = direccion.siguientePosicion(posicion)
+            posicion = self.posicionCorregida(nuevaPosicion)   
+        }
+        
     }
     // ATAQUE DISPARAR TANQUES
     method puedeDispararOtra() = balas_activas_del_tanque.size() < cargador
@@ -104,7 +121,7 @@ class TanqueJugador {
 
             balas_activas_del_tanque.add(bala)
             bala.dibujarBala()
-            bala.tuBalaChocoConAlgo(self, bala)
+           //  bala.tuBalaChocoConAlgo(self, bala)
 
             game.sound("tanque_disparando.wav").play()
         }
@@ -128,26 +145,9 @@ class TanqueJugador {
     }
     // PORTAR ESCUDO
 
-    method llevarEscudo(){
-        game.whenCollideDo(self, {unEscudo => unEscudo.seguirA(self)})
-    }
 
     method inmune() = inmune
     // ROBAR, RECUPERAR Y SOLTAR BANDERA (HALCON)
-
-    method banderaQueLleva() = banderaQueLleva
-
-    method urtarBandera() {
-        game.onCollideDo(self, {halcon => halcon.fueUrtadoPor(self)})
-    }
-
-    method recuperarBandera(){
-        game.onCollideDo(self, {halcon => halcon.recuperada(self)})
-    }
-
-    method dejarBanderaEnBase(){
-        game.onCollideDo(self, {base => base.dejarBanderaEnBase(self)})
-    }
 
     method llevaLaBanderaDeAlguien(){
         lleva_una_bandera = true
@@ -185,42 +185,54 @@ class TanqueJugador {
     }
 
     // COLISION DE BALA CON UN TANQUE - SI DEBE RESPAWNEAR y SOLTAR BANDERA o DESTRUIRSE
-    method teImpactoLaBalaDe(elQueDisparo, unaBala) {
-        if (self != elQueDisparo && !inmune){
+    method recibirImpactoDeBala(unaBala) {
+        
+        
+        borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala) 
+
+        if (self != unaBala.lePerteneceA() && !inmune){
+            
+
             if (respawn) {
+
                 if (lleva_una_bandera){
                     self.soltar_bandera()
-                    game.schedule(1500, {self.aRespawnear()})
-                    borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
+
                 }
 
-                self.explotar_tanque(self)
                 game.schedule(1500, {self.aRespawnear()})
-                self.normalizar()
-                borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
-            }            
+                
+                
+            }
+
+            
+                        
             else {  
                 if (verificar_finalizacion_partida.gano_alguien()){
                     verificar_finalizacion_partida.mensaje_victoria()
-                    self.explotar_tanque(self)
                 }
                 else{
-                    elQueDisparo.ganar_ronda()
+
+                    unaBala.lePerteneceA().ganar_ronda()
                     self.opcion_respawn(true)
-                    self.explotar_tanque(self)
-                    borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
                     reiniciar_mapa.recargar_escena(nivel1)
+
                 }       
             }
+
+            self.explotar_tanque(self)
+            self.normalizar()
         }
-        borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)          
+                 
     }
 
-    // REGOCER ITEMS
+    // INTERACCIONES TANQUE CON OBJETOS DEL CAMPO
 
-    method agarrarItem(){
-        game.onCollideDo(self, {n => n.efecto(self)})
+    method chocarConObjetos () {
+        game.onCollideDo(self, {n => n.teChocoUnTanque(self)} )
     }
+
+    method puedeSerDaniadoPorBala() = true
 
     // SER INMUNE 
 
@@ -230,9 +242,8 @@ class TanqueJugador {
 }
        
 object jugador2_tanque inherits TanqueJugador (posicion = new Position (x = 6, y = 6)) {
-
-    var controles = normal
-
+        
+    
     method actividad(){
             keyboard.p().onPressDo {
             self.disparar_de_tanques()
@@ -240,33 +251,44 @@ object jugador2_tanque inherits TanqueJugador (posicion = new Position (x = 6, y
 
             keyboard.right().onPressDo {
             self.nuevo_mover_tanque(derecha)
-            self.image("tankP2_right.png")
+            self.mostrarSprite_jugador2(derecha)
             }
 
             keyboard.left().onPressDo {
             self.nuevo_mover_tanque(izquierda)
-            self.image("tankP2_left.png")
+            self.mostrarSprite_jugador2(izquierda)
             }
 
             keyboard.down().onPressDo {
             self.nuevo_mover_tanque(abajo)
-            self.image("tankP2_down.png")
+            self.mostrarSprite_jugador2(abajo)
             }
 
             keyboard.up().onPressDo {
             self.nuevo_mover_tanque(arriba)
-            self.image("tankP2_up.png")
+            self.mostrarSprite_jugador2(arriba)
             }
 
-            self.urtarBandera()
-            self.recuperarBandera()
-            self.dejarBanderaEnBase()
+            self.chocarConObjetos()
+
+            self.mostrarSprite_jugador2(self.direccion())
     }
 
-    method cambiar (nuevoControles) {
-        controles = nuevoControles
+    method mostrarSprite_jugador2(direccionElegida){
+        
+        if (controlesInvertidos){
+            self.image(direccionElegida.controlInvertido().imagenTanque2())
+        }
+
+        else {
+            self.image(direccionElegida.imagenTanque2())
+        }
     }
 }
+
+
+
+
 
 object jugador1_tanque inherits TanqueJugador (posicion = new Position (x = 3, y = 3)) {
 
@@ -278,75 +300,38 @@ object jugador1_tanque inherits TanqueJugador (posicion = new Position (x = 3, y
 
             keyboard.d().onPressDo {
             self.nuevo_mover_tanque(derecha)
-            self.image("tank_right.png")
+            self.mostrarSprite_jugador1(derecha)
             }
 
             keyboard.a().onPressDo {
             self.nuevo_mover_tanque(izquierda)
-            self.image("tank_left.png")
+            self.mostrarSprite_jugador1(izquierda)
             }
 
             keyboard.s().onPressDo {
             self.nuevo_mover_tanque(abajo)
-            self.image("tank_down.png")
+            self.mostrarSprite_jugador1(abajo)
             }
 
             keyboard.w().onPressDo {
             self.nuevo_mover_tanque(arriba)
-            self.image("tank_up.png")
+            self.mostrarSprite_jugador1(arriba)
             }
 
-            self.urtarBandera()
-            self.recuperarBandera()
-            self.dejarBanderaEnBase()
-            self.agarrarItem()
-            self.llevarEscudo()       
+            self.chocarConObjetos()
     }
 
-    // NO SE PUDO IMPLEMENTAR
-    method velocidadBalas() {
-        game.onTick(self.velocidad_balas(), "DesplazarBalasTanque1", {
-            self.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(self)})
-            })
-    }
+    method mostrarSprite_jugador1(direccionElegida){
+        
+        if (controlesInvertidos){
+            self.image(direccionElegida.controlInvertido().imagenTanque1())
+        }
 
-    // NO SE PUDO IMPLEMENTAR
-    method detenerTick() {
-        game.removeTickEvent("DesplazarBalasTanque1")
+        else {
+            self.image(direccionElegida.imagenTanque1())
+        }
     }
 }
 
 
-
-object normal {
-    method movimientos(){
-            keyboard.p().onPressDo {
-            jugador2_tanque.disparar_de_tanques()
-            }
-
-            keyboard.right().onPressDo {
-            jugador2_tanque.nuevo_mover_tanque(derecha)
-            jugador2_tanque.image("tankP2_right.png")
-            }
-
-            keyboard.left().onPressDo {
-            jugador2_tanque.nuevo_mover_tanque(izquierda)
-            jugador2_tanque.image("tankP2_left.png")
-            }
-
-            keyboard.down().onPressDo {
-            jugador2_tanque.nuevo_mover_tanque(abajo)
-            jugador2_tanque.image("tankP2_down.png")
-            }
-
-            keyboard.up().onPressDo {
-            jugador2_tanque.nuevo_mover_tanque(arriba)
-            jugador2_tanque.image("tankP2_up.png")
-            }
-
-            jugador2_tanque.urtarBandera()
-            jugador2_tanque.recuperarBandera()
-            jugador2_tanque.dejarBanderaEnBase()
-    }
-}
 

@@ -1,6 +1,7 @@
 import src.tanque.*
 import battlecity.*
 import movimiento.*
+import mapa.*
 
 class Bala {
     var posicion
@@ -9,11 +10,13 @@ class Bala {
     var lePerteneceA
     const acuatico = true
 
-    const direccion
+    var direccion
 
     method image(){
         return direccion.imagenBala()
     }
+
+    method lePerteneceA() = lePerteneceA
 
     method irPorAgua() = acuatico
 
@@ -40,12 +43,22 @@ class Bala {
         }
 
         if(!permitir_movimiento.puedoMovermeEnEstaDireccion(self, self.orientacion())){
-            self.tuBalaChocoConAlgo(lePerteneceA, self)
+            permitir_movimiento.noPuedoAvanzarPorQueHayUnMuro(self, self.orientacion())
         }
 
         const nuevaPosicion = direccion.siguientePosicion(posicion)
         posicion = nuevaPosicion
         
+    }
+
+    method teChocoUnTanque (tanque) {
+
+        tanque.alcanzadoPorUnaBalaDe(lePerteneceA, self)
+
+    }
+
+    method balaImpactoConAlgo (elQueDisparo) {
+        game.onCollideDo(self, {unMuro => unMuro.recibirImpactoDeBala(self)})
     }
 
     method tuBalaChocoConAlgo(elQueDisparo, unaBala) {

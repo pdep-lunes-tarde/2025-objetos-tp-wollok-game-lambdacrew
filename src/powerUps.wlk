@@ -29,6 +29,12 @@ class PowerUps {
         game.removeVisual(self)
     }
 
+    method teChocoUnTanque (tanque) {
+        self.efecto(tanque)
+    }
+
+    method efecto(tanque) {}
+
     method seguirA(unTanque) {}
     method fueUrtadoPor(unTanque) {}
     method recuperada(unTanque) {}
@@ -44,15 +50,15 @@ object invertir_controles inherits PowerUps  {
         return "pw_pala.png"
     }
 
-    method efecto(tanqueQueAgarroElPower) {
+    override method efecto(tanqueQueAgarroElPower) {
 
         const jugadorAfectado = player.filter({jugador => jugador != tanqueQueAgarroElPower}).anyOne()
 
-        jugadorAfectado.cambiar(controles_invertidos)
+        jugadorAfectado.controlesInvertidos(true)
 
-        jugadorAfectado.actividad()
+        self.powerUpTomado()
 
-        game.removeVisual(self)
+        game.schedule(5000, {jugadorAfectado.controlesInvertidos(false)})
 
     }
 }
@@ -64,7 +70,7 @@ object aumentar_balas inherits PowerUps {
         return "1up.png"
     }
 
-    method efecto(tanqueQueAgarroElPower) {
+    override method efecto(tanqueQueAgarroElPower) {
 
         tanqueQueAgarroElPower.aumentarMunicionEn(2)
         self.powerUpTomado()
@@ -72,22 +78,6 @@ object aumentar_balas inherits PowerUps {
     }
 }
 
-// NO SE PUDO IMPLEMENTAR - PREGUNTAR
-object aumentar_velocidad_disparo inherits PowerUps {
-
-    method image() {
-        return "pw_estrella.png"
-    }
-
-    method efecto(tanqueQueAgarroElPower) {
-
-        tanqueQueAgarroElPower.aumentarVelocidadBala(10)
-
-        actualizar_velocidadDisparo.actualizar_j1()
-
-        self.powerUpTomado()
-    }
-}
 
 // SI, SE PUEDE MEJORAR ?
 object escudo inherits PowerUps {
@@ -96,9 +86,9 @@ object escudo inherits PowerUps {
         return "pw_escudo.png"
     }
 
-    method efecto(tanqueQueAgarroElPower) {
+    override method efecto(tanqueQueAgarroElPower) {
 
-        const aura_del_tanque = new Aura_escudo (posicion = tanqueQueAgarroElPower.position())
+        const aura_del_tanque = new Aura_escudo (tanque = tanqueQueAgarroElPower)
 
         tanqueQueAgarroElPower.cambiarEstadoInmunidad(true)
 
@@ -126,7 +116,7 @@ object pasarPorAgua inherits PowerUps {
 
 object spawnearPowerUps{
 
-    const powerUpsDisponibles = [pasarPorAgua, escudo, aumentar_balas, aumentar_velocidad_disparo]
+    const powerUpsDisponibles = [invertir_controles, pasarPorAgua, escudo, aumentar_balas]
 
     method elegirUnPowerAlAzar() {
         var aparecio = powerUpsDisponibles.anyOne()

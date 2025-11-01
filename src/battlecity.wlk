@@ -31,11 +31,11 @@ object juegoBattleCity {
         jugador1_tanque.actividad()
 
         game.onTick(jugador1_tanque.velocidad_balas(), "DesplazarBalasTanque1", {
-            jugador1_tanque.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(jugador1_tanque)})
+            jugador1_tanque.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(jugador1_tanque) })
             })
         
         game.onTick(jugador2_tanque.velocidad_balas(), "DesplazarBalasTanque2", {
-            jugador2_tanque.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(jugador2_tanque)})
+            jugador2_tanque.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(jugador2_tanque) })
             })
         
         cargar_nivel.iniciar()
@@ -81,18 +81,5 @@ object cargar_nivel {
 
         nivel1.dibujarDetalles()
 
-    }
-}
-
-
-// NO SE LLEGO A IMPLEMENTAR 
-object actualizar_velocidadDisparo {
-
-    method actualizar_j1() {
-        const nuevoValor = jugador1_tanque.velocidad_balas()
-        jugador1_tanque.detenerTick()
-        game.onTick(nuevoValor, "DesplazarBalasTanque1", {
-            jugador1_tanque.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(jugador1_tanque)})
-            })
     }
 }

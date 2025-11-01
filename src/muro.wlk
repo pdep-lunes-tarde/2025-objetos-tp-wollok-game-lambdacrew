@@ -14,6 +14,8 @@ class Muro {
         durabilidad = 3
     }
 
+    method puedeSerDaniadoPorBala() = true
+
     method esAtravesable(entidad) = durabilidad < 1
 
     method teImpactoLaBalaDe(elQueDisparo, unaBala) {
@@ -25,6 +27,18 @@ class Muro {
         else {
             game.removeVisual(self)
             borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
+        }
+    }
+
+    method recibirImpactoDeBala(unaBala) {
+        if(durabilidad > 1) {
+            durabilidad = durabilidad - unaBala.fuerza()
+            borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala)
+            game.sound("balas_chocando.wav").play()
+        }
+        else {
+            game.removeVisual(self)
+            borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala)
         }
     }
 
@@ -97,6 +111,8 @@ class Parche_De_Agua inherits Muro {
 
     override method esAtravesable(entidad) = entidad.irPorAgua()
 
+    override method puedeSerDaniadoPorBala() = false
+
 }
 
 class Arbustos {
@@ -117,6 +133,8 @@ class Arbustos {
     method noDejarloPasar(unTanque){}
 
     method esAtravesable(entidad) = true
+
+    method puedeSerDaniadoPorBala() = false
 
     method efecto(unTanque) {}
     method seguirA(unTanque) {}

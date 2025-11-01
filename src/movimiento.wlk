@@ -3,12 +3,25 @@ object izquierda {
         return posicion.left(1)
     }
 
+    method controlInvertido() = derecha
+
     method imagenBala() = "bala_tanque_left.png"
+
+    method imagenTanque1() = "tank_left.png"
+
+    method imagenTanque2() = "tankP2_left.png"
 }
 object abajo {
     method siguientePosicion(posicion) {
         return posicion.down(1)
     }
+
+    method controlInvertido() = arriba
+
+    method imagenTanque1() = "tank_down.png"
+
+    method imagenTanque2() = "tankP2_down.png"
+    
 
     method imagenBala() = "bala_tanque_down.png"
 }
@@ -17,20 +30,40 @@ object arriba {
         return posicion.up(1)
     }
 
+    method controlInvertido() = abajo
+
     method imagenBala() = "bala_tanque_up.png"
+
+    method imagenTanque1() = "tank_up.png"
+
+    method imagenTanque2() = "tankP2_up.png"
 }
 object derecha {
     method siguientePosicion(posicion) {
         return posicion.right(1)
     }
 
+    method controlInvertido() = izquierda
+
     method imagenBala() = "bala_tanque.png"
+
+    method imagenTanque1() = "tank_right.png"
+
+    method imagenTanque2() = "tankP2_right.png"
 }
 
 object sinDireccion {
     method siguientePosicion(posicion) {
         return posicion
     }
+    
+
+    method imagenBala() = "bala_tanque.png"
+
+    method imagenTanque1() = "tank_left.png"
+
+    method imagenTanque2() = "tankP2_right.png"
+
 }
 
 object wraparound {
@@ -52,4 +85,14 @@ object permitir_movimiento{
     method puedoMovermeEnEstaDireccion (entidad, unaOrientacion) {
         return game.getObjectsIn(unaOrientacion.siguientePosicion(entidad.position())).all {unObj => unObj.esAtravesable(entidad)}
     }
+
+    method noPuedoAvanzarPorQueHayUnMuro (entidad, unaOrientacion) {
+        game.getObjectsIn(unaOrientacion.siguientePosicion(entidad.position())).forEach 
+            {unObj => 
+                if (unObj.puedeSerDaniadoPorBala()){
+                    unObj.recibirImpactoDeBala(entidad)
+                }
+            }
+    }
+
 }

@@ -1,16 +1,8 @@
 class Aura_escudo {
-    var posicion = new Position()
+    var tanque
 
     method position(){
-        return posicion
-    }
-
-    method position(nuevaPosition){
-        posicion = nuevaPosition
-    }
-
-    method seguirA(unTanque){
-        game.schedule(0, {self.position(unTanque.position())})
+        return tanque.position()
     }
 
     method image(){
@@ -20,6 +12,8 @@ class Aura_escudo {
     method dibujarEscudo(){
         game.addVisual(self)
     }
+
+    method puedeSerDaniadoPorBala() = false
 
     method esAtravesable(entidad) = true
 } 

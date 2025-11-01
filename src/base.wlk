@@ -16,12 +16,12 @@ class Base {
         game.addVisual(self)
     }
 
-    method dejarBanderaEnBase(unTanque) {
+    method teChocoUnTanque (tanque) {
 
-        if (lePerteneceA == unTanque) {
-        unTanque.banderaQueLleva().fueCapturada()
-        unTanque.soltar_bandera()
-        unTanque.banderaQueLleva().position(ubicacion)
+        if (lePerteneceA == tanque) {
+            tanque.banderaQueLleva().fueCapturada()
+            tanque.soltar_bandera()
+            tanque.banderaQueLleva().position(ubicacion)
         }
     }
 
