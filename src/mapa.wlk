@@ -5,8 +5,69 @@ import tanque.*
 import halcon.*
 import base.*
 
-object nivel1{
-    const conjuntoMuros = [
+class Mapa {
+
+    const visualizacion_previa
+    const ubicacion_en_pantalla_de_seleccion
+
+    const muros
+    const arbustos
+    const parches_de_agua
+    const halcones
+    const bases
+
+    method visualizacion_previa() {
+        return visualizacion_previa
+    }
+
+    method position() {
+        return ubicacion_en_pantalla_de_seleccion
+    }
+
+    method ejecutar () {
+
+        game.clear()
+
+        cargar_nivel.iniciar(self)
+
+        juegoBattleCity.configurar()
+
+    }
+
+    method dibujarMapa() {
+        muros.forEach({n => game.addVisual(n)})
+        parches_de_agua.forEach({n => game.addVisual(n)})
+        halcones.forEach({n => game.addVisual(n)})
+        bases.forEach({n => game.addVisual(n)})
+    }
+
+    method dibujarDetalles(){
+        arbustos.forEach({n => n.dibujarMuro()})
+    }
+
+    method setearInicioTanqueEnElMapa (posicionInicial_jugador1, posicionInicial_jugador2) {
+        jugador1_tanque.position(posicionInicial_jugador1)
+        jugador2_tanque.position(posicionInicial_jugador2)
+
+    }
+
+    method reHacerMuros() {
+        muros.forEach({n => n.restablecerDurabilidad()})
+    }
+
+    method reubicarHalcon() {
+        halcones.forEach({n => n.restablecerUbicacion() n.liberada()})
+    }
+
+
+
+    
+}
+object nivel1 inherits Mapa ( 
+    visualizacion_previa = "vista_previa_nivel1.png", 
+    ubicacion_en_pantalla_de_seleccion = new Position (x = 5, y = 7),
+
+    muros = [
           new Muro_Ladrillos(position = new Position(x = 0, y = 2))
         , new Muro_Ladrillos(position = new Position(x = 2, y = 2))
         , new Muro_Ladrillos(position = new Position(x = 2, y = 0))
@@ -30,11 +91,13 @@ object nivel1{
         , new Muro_Ladrillos(position = new Position(x = 5, y = 6))
         , new Muro_Ladrillos(position = new Position(x = 5, y = 3))
         , new Muro_Ladrillos(position = new Position(x = 5, y = 1))
-        , new Muro_Ladrillos(position = new Position(x = 5, y = 0))]
+        , new Muro_Ladrillos(position = new Position(x = 5, y = 0))
+        , new Muro_Reforzado(position = new Position(x = 2, y = 8))
+        ],
 
 
     
-    const conjuntoDetalles = [ 
+    arbustos = [ 
           new Arbustos(position = new Position(x = 2, y = 5))
         , new Arbustos(position = new Position(x = 3, y = 5))
         , new Arbustos(position = new Position(x = 2, y = 4))
@@ -42,9 +105,10 @@ object nivel1{
         , new Arbustos(position = new Position(x = 7, y = 5))
         , new Arbustos(position = new Position(x = 8, y = 5))
         , new Arbustos(position = new Position(x = 7, y = 4))
-        , new Arbustos(position = new Position(x = 8, y = 4))]
+        , new Arbustos(position = new Position(x = 8, y = 4))
+        ],
 
-    const parches_de_agua = [
+    parches_de_agua = [
           new Parche_De_Agua (position = new Position (x = 4 ,y = 5 ))
         , new Parche_De_Agua (position = new Position (x = 5 ,y = 5 ))
         , new Parche_De_Agua (position = new Position (x = 6 ,y = 5 ))
@@ -53,41 +117,131 @@ object nivel1{
         , new Parche_De_Agua (position = new Position (x = 6 ,y = 4 ))
         , new Parche_De_Agua (position = new Position (x = 5 ,y = 7 ))
         , new Parche_De_Agua (position = new Position (x = 5 ,y = 2 ))
-        ]
-    //
-    //const enemigo = new Enemigo(salud = 2, posicion = new Position(x = 0,y = 9), direccion = abajo)
-    //
+        ],
 
-    const halcones = [
+
+    halcones = [
           new Halcon (lePerteneceA = jugador1_tanque, origen_bandera = new Position(x = 0, y = 0), posicion = new Position (x = 0, y = 0))
-        , new Halcon (lePerteneceA = jugador2_tanque, posicion = new Position(x = 10, y = 9) , origen_bandera = new Position(x = 10, y = 9))]
+        , new Halcon (lePerteneceA = jugador2_tanque, posicion = new Position(x = 10, y = 9) , origen_bandera = new Position(x = 10, y = 9))
+        ],
 
-    const bases = [
+    bases = [
           new Base(lePerteneceA = jugador1_tanque, ubicacion = new Position(x=0,y=1))
-        , new Base(lePerteneceA = jugador2_tanque, ubicacion = new Position(x=10,y=8))]
+        , new Base(lePerteneceA = jugador2_tanque, ubicacion = new Position(x=10,y=8))
+        ]
 
-    method dibujarMapa() {
-        conjuntoMuros.forEach({n => game.addVisual(n)})
-        parches_de_agua.forEach({n => game.addVisual(n)})
-        halcones.forEach({n => game.addVisual(n)})
-        bases.forEach({n => game.addVisual(n)})
+    ) {
+
+        override method dibujarMapa() {
+
+            self.setearInicioTanqueEnElMapa(new Position (x = 3, y = 3), new Position (x = 6, y = 6))
+            super()
+        }
     }
 
-    method dibujarDetalles(){
-        conjuntoDetalles.forEach({n => n.dibujarMuro()})
+object nivel2 inherits Mapa (
+        visualizacion_previa = "vista_previa_nivel2.png", 
+        ubicacion_en_pantalla_de_seleccion = new Position (x = 5, y = 5), 
 
-    }
+        muros = [
+          new Muro_Ladrillos(position = new Position(x = 0, y = 3))
+        , new Muro_Ladrillos(position = new Position(x = 0, y = 7))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 3))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 4))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 5))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 6))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 7))
 
- /*   method dibujarEnemigos(){
-        enemigo.dibujarTanqueAmenaza()
-        game.onTick(1000, "Enemigo disparo", {enemigo.dispararBala()}) 
-    } */
+        , new Muro_Ladrillos(position = new Position(x = 10, y = 3))
+        , new Muro_Ladrillos(position = new Position(x = 10, y = 7))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 3))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 4))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 5))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 6))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 7))
 
-    method reHacerMuros() {
-        conjuntoMuros.forEach({n => n.restablecerDurabilidad()})
-    }
+        , new Muro_Ladrillos(position = new Position(x = 2, y = 0))
+        , new Muro_Ladrillos(position = new Position(x = 2, y = 1))
+        , new Muro_Ladrillos(position = new Position(x = 2, y = 2))
+        , new Muro_Ladrillos(position = new Position(x = 3, y = 0))
+        , new Muro_Ladrillos(position = new Position(x = 3, y = 1))
+        , new Muro_Ladrillos(position = new Position(x = 3, y = 2))
+        , new Muro_Ladrillos(position = new Position(x = 4, y = 0))
+        , new Muro_Ladrillos(position = new Position(x = 4, y = 1))
+        , new Muro_Ladrillos(position = new Position(x = 4, y = 2))
 
-    method reubicarHalcon() {
-        halcones.forEach({n => n.restablecerUbicacion() n.liberada()})
-    }
-}
+        , new Muro_Ladrillos(position = new Position(x = 5, y = 0))
+        , new Muro_Ladrillos(position = new Position(x = 5, y = 2))
+
+        , new Muro_Ladrillos(position = new Position(x = 6, y = 0))
+        , new Muro_Ladrillos(position = new Position(x = 6, y = 1))
+        , new Muro_Ladrillos(position = new Position(x = 6, y = 2))
+        , new Muro_Ladrillos(position = new Position(x = 7, y = 0))
+        , new Muro_Ladrillos(position = new Position(x = 7, y = 1))
+        , new Muro_Ladrillos(position = new Position(x = 7, y = 2))
+        , new Muro_Ladrillos(position = new Position(x = 8, y = 0))
+        , new Muro_Ladrillos(position = new Position(x = 8, y = 1))
+        , new Muro_Ladrillos(position = new Position(x = 8, y = 2))
+        
+        , new Muro_Reforzado(position = new Position(x = 2, y = 8))
+        , new Muro_Reforzado(position = new Position(x = 2, y = 9))
+        , new Muro_Reforzado(position = new Position(x = 3, y = 5))
+        , new Muro_Reforzado(position = new Position(x = 5, y = 1))
+        , new Muro_Reforzado(position = new Position(x = 5, y = 3))
+        , new Muro_Reforzado(position = new Position(x = 5, y = 5))
+        , new Muro_Reforzado(position = new Position(x = 5, y = 7))
+        , new Muro_Reforzado(position = new Position(x = 7, y = 5))
+        , new Muro_Reforzado(position = new Position(x = 8, y = 8))
+        , new Muro_Reforzado(position = new Position(x = 8, y = 9))
+        ], 
+
+        arbustos = [
+          new Arbustos(position = new Position(x = 2, y = 4))
+        , new Arbustos(position = new Position(x = 2, y = 5))
+        , new Arbustos(position = new Position(x = 2, y = 6))
+        , new Arbustos(position = new Position(x = 3, y = 4))
+        , new Arbustos(position = new Position(x = 3, y = 6))
+        , new Arbustos(position = new Position(x = 4, y = 3))
+        , new Arbustos(position = new Position(x = 4, y = 7))
+        , new Arbustos(position = new Position(x = 4, y = 8))
+
+        , new Arbustos(position = new Position(x = 5, y = 8))
+        , new Arbustos(position = new Position(x = 6, y = 8))
+        , new Arbustos(position = new Position(x = 6, y = 7))
+        , new Arbustos(position = new Position(x = 6, y = 3))
+        , new Arbustos(position = new Position(x = 7, y = 4))
+        , new Arbustos(position = new Position(x = 7, y = 6))
+        , new Arbustos(position = new Position(x = 8, y = 4))
+        , new Arbustos(position = new Position(x = 8, y = 5))
+        , new Arbustos(position = new Position(x = 8, y = 6))
+        ], 
+
+        halcones = [
+          new Halcon (lePerteneceA = jugador1_tanque, origen_bandera = new Position(x = 0, y = 6), posicion = new Position (x = 0, y = 6))
+        , new Halcon (lePerteneceA = jugador2_tanque, origen_bandera = new Position(x = 10, y = 6), posicion = new Position(x = 10, y = 6))
+        ], 
+
+        bases = [
+          new Base(lePerteneceA = jugador1_tanque, ubicacion = new Position(x = 0, y = 4))
+        , new Base(lePerteneceA = jugador2_tanque, ubicacion = new Position(x = 10, y = 4))
+        ], 
+        
+        parches_de_agua = [
+          new Parche_De_Agua (position = new Position (x = 4 , y = 4 ))
+        , new Parche_De_Agua (position = new Position (x = 4 , y = 5 ))
+        , new Parche_De_Agua (position = new Position (x = 4 , y = 6 ))
+        , new Parche_De_Agua (position = new Position (x = 5 , y = 4 ))
+        , new Parche_De_Agua (position = new Position (x = 5 , y = 6 ))
+        , new Parche_De_Agua (position = new Position (x = 6 , y = 4 ))
+        , new Parche_De_Agua (position = new Position (x = 6 , y = 5 ))
+        , new Parche_De_Agua (position = new Position (x = 6 , y = 6 ))
+        ]
+        
+        ) {
+
+            override method dibujarMapa() {
+
+            self.setearInicioTanqueEnElMapa(new Position (x = 1, y = 1), new Position (x = 9, y = 1))
+            super()
+        }
+        }

@@ -51,14 +51,14 @@ class Bala {
         
     }
 
-    method teChocoUnTanque (tanque) {
-
-        tanque.alcanzadoPorUnaBalaDe(lePerteneceA, self)
-
-    }
+    method teChocoUnTanque (tanque) {}
 
     method balaImpactoConAlgo (elQueDisparo) {
         game.onCollideDo(self, {unMuro => unMuro.recibirImpactoDeBala(self)})
+    }
+
+    method habilitarRomperMurosReforzados(valor){
+        rompeMurosReforzados = valor
     }
 
     method tuBalaChocoConAlgo(elQueDisparo, unaBala) {

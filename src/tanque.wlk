@@ -16,9 +16,11 @@ class TanqueJugador {
 
     var acuatico = false
 
-    var posicion
+    var posicion = new Position()
 
     const spawn = posicion
+
+    var romper_murosReforzados = false
 
     var banderaQueLleva = null
     var lleva_una_bandera = false
@@ -27,10 +29,14 @@ class TanqueJugador {
     
     const balas_activas_del_tanque = []
     var cargador = 1
-    var velocidad_balas = 10
+    var velocidad_balas = 100
 
 
     method banderaQueLleva() = banderaQueLleva
+
+    method romper_murosReforzados(valor) {
+        romper_murosReforzados = valor
+    }
 
     method controlesInvertidos(valor) {
         controlesInvertidos = valor
@@ -119,9 +125,12 @@ class TanqueJugador {
         if(self.puedeDispararOtra()) {
             const bala = new Bala(lePerteneceA = self, direccion = self.direccion(), posicion = self.position())  /* self.direccion().siguientePosicion(self.position() */
 
+            if (romper_murosReforzados) {
+                bala.habilitarRomperMurosReforzados(true)
+            }
+
             balas_activas_del_tanque.add(bala)
             bala.dibujarBala()
-           //  bala.tuBalaChocoConAlgo(self, bala)
 
             game.sound("tanque_disparando.wav").play()
         }
@@ -140,7 +149,7 @@ class TanqueJugador {
         inmune = false
         acuatico = false
         cargador = 1
-        velocidad_balas = 60
+        velocidad_balas = 100
         posicion = spawn
     }
     // PORTAR ESCUDO
@@ -241,7 +250,7 @@ class TanqueJugador {
     }
 }
        
-object jugador2_tanque inherits TanqueJugador (posicion = new Position (x = 6, y = 6)) {
+object jugador2_tanque inherits TanqueJugador () {
         
     
     method actividad(){
@@ -284,13 +293,21 @@ object jugador2_tanque inherits TanqueJugador (posicion = new Position (x = 6, y
             self.image(direccionElegida.imagenTanque2())
         }
     }
+
+    method hacerNuevoTickDisparo() {
+        game.removeTickEvent("DesplazarBalasTanque2") 
+
+        game.onTick(self.velocidad_balas(), "DesplazarBalasTanque2", {
+            self.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(self) })
+            })
+    }
 }
 
 
 
 
 
-object jugador1_tanque inherits TanqueJugador (posicion = new Position (x = 3, y = 3)) {
+object jugador1_tanque inherits TanqueJugador () {
 
     method actividad(){
             keyboard.f().onPressDo {
@@ -330,6 +347,14 @@ object jugador1_tanque inherits TanqueJugador (posicion = new Position (x = 3, y
         else {
             self.image(direccionElegida.imagenTanque1())
         }
+    }
+
+    method hacerNuevoTickDisparo() {
+        game.removeTickEvent("DesplazarBalasTanque1") 
+
+        game.onTick(self.velocidad_balas(), "DesplazarBalasTanque1", {
+            self.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(self) })
+            })
     }
 }
 

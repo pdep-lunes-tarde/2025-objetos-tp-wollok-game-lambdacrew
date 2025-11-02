@@ -42,7 +42,6 @@ class PowerUps {
 
 }
 
-// NO SE PUDO IMPLEMENTAR - PREGUNTAR
 object invertir_controles inherits PowerUps  {
     const player = [jugador1_tanque, jugador2_tanque]
 
@@ -63,7 +62,6 @@ object invertir_controles inherits PowerUps  {
     }
 }
 
-// SI
 object aumentar_balas inherits PowerUps {
 
     method image() {
@@ -79,7 +77,6 @@ object aumentar_balas inherits PowerUps {
 }
 
 
-// SI, SE PUEDE MEJORAR ?
 object escudo inherits PowerUps {
 
     method image() {
@@ -108,71 +105,50 @@ object pasarPorAgua inherits PowerUps {
         return "pw_barco.png"
     }
 
-    method efecto(tanqueQueAgarroElPower) {
+    override method efecto(tanqueQueAgarroElPower) {
         tanqueQueAgarroElPower.habilitarIrPorAgua(true)
+        self.powerUpTomado()
+    }
+}
+
+object aumentar_velocidad_balas inherits PowerUps {
+
+    method image() {
+        return "pw_estrella.png"
+    }
+
+    override method efecto (tanqueQueAgarroElPower) {
+        tanqueQueAgarroElPower.aumentarVelocidadBala(1.max(tanqueQueAgarroElPower.velocidad_balas() - 20))
+
+        tanqueQueAgarroElPower.hacerNuevoTickDisparo()
+
+        self.powerUpTomado()
+
+    }
+}
+
+object romper_muros_irrompibles inherits PowerUps {
+
+    method image() {
+        return "pw_granada.png"
+    }
+
+    override method efecto (tanqueQueAgarroElPower) {
+
+        tanqueQueAgarroElPower.romper_murosReforzados(true)
+
         self.powerUpTomado()
     }
 }
 
 object spawnearPowerUps{
 
-    const powerUpsDisponibles = [invertir_controles, pasarPorAgua, escudo, aumentar_balas]
+    const powerUpsDisponibles = [romper_muros_irrompibles, aumentar_velocidad_balas, invertir_controles, pasarPorAgua, escudo, aumentar_balas]
 
     method elegirUnPowerAlAzar() {
         var aparecio = powerUpsDisponibles.anyOne()
         aparecio.aparecerPowerUp()
 
         game.schedule(3000, {game.removeVisual(aparecio)})
-    }
-}
-
-
-// LIGADO AL POWER UP DE CONTROLES INVERTIDOS 
-object controles_invertidos {
-
-    method movimientos() {
-
-        keyboard.up().onPressDo {
-            jugador2_tanque.nuevo_mover_tanque(derecha)
-            jugador2_tanque.image("tankP2_right.png")
-        }
-
-        keyboard.down().onPressDo {
-            jugador2_tanque.nuevo_mover_tanque(izquierda)
-            jugador2_tanque.image("tankP2_left.png")
-        }
-
-        keyboard.left().onPressDo {
-            jugador2_tanque.nuevo_mover_tanque(abajo)
-            jugador2_tanque.image("tankP2_down.png")
-        }
-
-        keyboard.right().onPressDo {
-            jugador2_tanque.nuevo_mover_tanque(arriba)
-            jugador2_tanque.image("tankP2_up.png")
-        }
-    }
-
-    method controles_j1_nuevo() {
-
-        keyboard.w().onPressDo {
-            jugador1_tanque.nuevo_mover_tanque(derecha)
-            jugador1_tanque.image("tankP2_right.png")
-        }
-
-        keyboard.s().onPressDo {
-            jugador1_tanque.nuevo_mover_tanque(izquierda)
-            jugador1_tanque.image("tankP2_left.png")
-        }
-
-        keyboard.a().onPressDo {
-            jugador1_tanque.nuevo_mover_tanque(abajo)
-            jugador1_tanque.image("tankP2_down.png")
-        }
-
-        keyboard.d().onPressDo {
-            jugador1_tanque.nuevo_mover_tanque(arriba)
-            jugador1_tanque.image("tankP2_up.png")
-        }
     }
 }

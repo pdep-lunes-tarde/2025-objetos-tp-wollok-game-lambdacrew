@@ -43,6 +43,7 @@ class Muro {
     }
 
     
+    method teChocoUnTanque(tanque) {}
 
     method dibujarMuro(){
         game.addVisual(self)
@@ -74,15 +75,15 @@ class Muro_Ladrillos inherits Muro{
             return  "muro_tumbado.png"
         }
     }
+
 }
 class Muro_Reforzado inherits Muro{
 
-    override method teImpactoLaBalaDe(elQueDisparo, unaBala){
+    override method recibirImpactoDeBala(unaBala){
         if (unaBala.rompeMurosReforzados()){
-            super(elQueDisparo, unaBala)
+            super(unaBala)
         }
-        elQueDisparo.irBorrandoBalas()
-        game.removeVisual(unaBala)
+        borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala)
     }
 
     method image() {
@@ -135,6 +136,8 @@ class Arbustos {
     method esAtravesable(entidad) = true
 
     method puedeSerDaniadoPorBala() = false
+
+    method teChocoUnTanque (tanque) {}
 
     method efecto(unTanque) {}
     method seguirA(unTanque) {}
