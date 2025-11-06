@@ -6,9 +6,7 @@ class Base {
 
     method position() = ubicacion
 
-    method position(aguila) {
-        ubicacion = aguila.origen_bandera()
-    }
+    method esAtravesable(entidad) = true
 
     method lePerteneceA() = lePerteneceA
 
@@ -21,9 +19,8 @@ class Base {
         if (lePerteneceA == tanque) {
             tanque.banderaQueLleva().fueCapturada()
             tanque.soltar_bandera()
-            tanque.banderaQueLleva().position(ubicacion)
         }
     }
 
-    method esAtravesable(entidad) = true
+    
 }

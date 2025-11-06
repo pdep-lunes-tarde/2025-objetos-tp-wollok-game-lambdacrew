@@ -16,4 +16,6 @@ class Aura_escudo {
     method puedeSerDaniadoPorBala() = false
 
     method esAtravesable(entidad) = true
+
+    method teChocoUnTanque(unTanque) {} 
 } 

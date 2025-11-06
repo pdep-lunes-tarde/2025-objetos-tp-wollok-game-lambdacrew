@@ -1,3 +1,4 @@
+/*
 import powerUps.*
 import tanque.*
 import bala.*
@@ -102,3 +103,4 @@ class TanqueEnemigo_Basico{
     }
 
 }
+*/

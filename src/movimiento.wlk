@@ -1,3 +1,5 @@
+import battlecity.*
+
 object izquierda {
     method siguientePosicion(posicion) {
         return posicion.left(1)
@@ -95,4 +97,11 @@ object permitir_movimiento{
             }
     }
 
+}
+
+object limitesMapa {
+
+    method teSalisteDeLosLimitesDelMapa (elemento) = 
+        elemento.position().x() > juegoBattleCity.ancho() || elemento.position().x() < 0 ||
+        elemento.position().y() > juegoBattleCity.alto() || elemento.position().y() < 0
 }

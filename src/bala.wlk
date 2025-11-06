@@ -4,46 +4,53 @@ import movimiento.*
 import mapa.*
 
 class Bala {
+
     var posicion
+    var direccion
+    var lePerteneceA
+
     var fuerza = 1
     var rompeMurosReforzados = false
-    var lePerteneceA
-    const acuatico = true
-
-    var direccion
-
-    method image(){
-        return direccion.imagenBala()
-    }
-
-    method lePerteneceA() = lePerteneceA
-
-    method irPorAgua() = acuatico
 
     method position() {
         return posicion
     }
 
-    method orientacion(){
+    method image(){
+        return direccion.imagenBala()
+    }
+
+    method orientacion_bala(){
         return direccion
     }
 
-    method fuerza() {
-        return fuerza
+    method habilitarRomperMurosReforzados(valor){
+        rompeMurosReforzados = valor
     }
 
-    method rompeMurosReforzados(){
-        return rompeMurosReforzados
+    method dibujarBala(){
+        game.addVisual(self)
     }
 
+    method lePerteneceA() = lePerteneceA
+
+    method irPorAgua() = true
+
+    method esAtravesable(entidad) = true
+
+    method fuerza() = fuerza
+
+    method rompeMurosReforzados() = rompeMurosReforzados
+
+    
     method moverBalasDe(unTanque){
 
         if (limitesMapa.teSalisteDeLosLimitesDelMapa(self)){
             borrar_balas.bala_logro_su_objetivo(unTanque, self)
         }
 
-        if(!permitir_movimiento.puedoMovermeEnEstaDireccion(self, self.orientacion())){
-            permitir_movimiento.noPuedoAvanzarPorQueHayUnMuro(self, self.orientacion())
+        if(!permitir_movimiento.puedoMovermeEnEstaDireccion(self, self.orientacion_bala())){
+            permitir_movimiento.noPuedoAvanzarPorQueHayUnMuro(self, self.orientacion_bala())
         }
 
         const nuevaPosicion = direccion.siguientePosicion(posicion)
@@ -53,44 +60,6 @@ class Bala {
 
     method teChocoUnTanque (tanque) {}
 
-    method balaImpactoConAlgo (elQueDisparo) {
-        game.onCollideDo(self, {unMuro => unMuro.recibirImpactoDeBala(self)})
-    }
-
-    method habilitarRomperMurosReforzados(valor){
-        rompeMurosReforzados = valor
-    }
-
-    method tuBalaChocoConAlgo(elQueDisparo, unaBala) {
-        game.onCollideDo(unaBala, {otro => otro.teImpactoLaBalaDe(elQueDisparo, unaBala)})
-        
-    }
-
-    method teImpactoLaBalaDe(elQueDisparo, unaBala){
-        borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
-        game.removeVisual(self)
-        game.sound("balas_chocando.wav").play()
-    } 
-
-    method dibujarBala(){
-        direccion.imagenBala()
-        game.addVisual(self)
-    }
-
-    method esAtravesable(entidad) = true
-
-    method efecto(unTanque) {}
-    method seguirA(unTanque) {}
-    method fueUrtadoPor(unTanque) {}
-    method recuperada(unTanque) {}
-    method dejarBanderaEnBase(unTanque) {}
-}
-
-object limitesMapa {
-
-    method teSalisteDeLosLimitesDelMapa (elemento) = 
-        elemento.position().x() > juegoBattleCity.ancho() || elemento.position().x() < 0 ||
-        elemento.position().y() > juegoBattleCity.alto() || elemento.position().y() < 0
 }
 
 object borrar_balas {

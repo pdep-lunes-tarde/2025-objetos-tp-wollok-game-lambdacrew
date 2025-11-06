@@ -5,9 +5,14 @@ import tanque.*
 import halcon.*
 import base.*
 
+const inicio_batalla = game.sound("inicio_partida.mp3")
+
 class Mapa {
 
     const visualizacion_previa
+
+    const nombre_nivel
+
     const ubicacion_en_pantalla_de_seleccion
 
     const muros
@@ -20,17 +25,32 @@ class Mapa {
         return visualizacion_previa
     }
 
+    method image() {
+        return nombre_nivel
+    }
+
     method position() {
         return ubicacion_en_pantalla_de_seleccion
     }
 
     method ejecutar () {
 
+        
+        
+
         game.clear()
+
+        game.schedule(500, {inicio_batalla.play()})
 
         cargar_nivel.iniciar(self)
 
         juegoBattleCity.configurar()
+
+    }
+
+    method detenerMusica() {
+
+        game.sound("inicio_partida.mp3").stop()
 
     }
 
@@ -47,7 +67,9 @@ class Mapa {
 
     method setearInicioTanqueEnElMapa (posicionInicial_jugador1, posicionInicial_jugador2) {
         jugador1_tanque.position(posicionInicial_jugador1)
+        jugador1_tanque.setearSpawn()
         jugador2_tanque.position(posicionInicial_jugador2)
+        jugador2_tanque.setearSpawn()
 
     }
 
@@ -66,6 +88,7 @@ class Mapa {
 object nivel1 inherits Mapa ( 
     visualizacion_previa = "vista_previa_nivel1.png", 
     ubicacion_en_pantalla_de_seleccion = new Position (x = 5, y = 7),
+    nombre_nivel = "campo_batalla_1.png",
 
     muros = [
           new Muro_Ladrillos(position = new Position(x = 0, y = 2))
@@ -121,8 +144,8 @@ object nivel1 inherits Mapa (
 
 
     halcones = [
-          new Halcon (lePerteneceA = jugador1_tanque, origen_bandera = new Position(x = 0, y = 0), posicion = new Position (x = 0, y = 0))
-        , new Halcon (lePerteneceA = jugador2_tanque, posicion = new Position(x = 10, y = 9) , origen_bandera = new Position(x = 10, y = 9))
+          new Halcon (sprite_bandera = "halcon_P1.png", lePerteneceA = jugador1_tanque, origen_bandera = new Position(x = 0, y = 0), posicion = new Position (x = 0, y = 0))
+        , new Halcon (sprite_bandera = "halcon_P2.png", lePerteneceA = jugador2_tanque, posicion = new Position(x = 10, y = 9) , origen_bandera = new Position(x = 10, y = 9))
         ],
 
     bases = [
@@ -141,7 +164,8 @@ object nivel1 inherits Mapa (
 
 object nivel2 inherits Mapa (
         visualizacion_previa = "vista_previa_nivel2.png", 
-        ubicacion_en_pantalla_de_seleccion = new Position (x = 5, y = 5), 
+        ubicacion_en_pantalla_de_seleccion = new Position (x = 5, y = 5),
+        nombre_nivel = "campo_batalla_2.png", 
 
         muros = [
           new Muro_Ladrillos(position = new Position(x = 0, y = 3))
@@ -217,8 +241,8 @@ object nivel2 inherits Mapa (
         ], 
 
         halcones = [
-          new Halcon (lePerteneceA = jugador1_tanque, origen_bandera = new Position(x = 0, y = 6), posicion = new Position (x = 0, y = 6))
-        , new Halcon (lePerteneceA = jugador2_tanque, origen_bandera = new Position(x = 10, y = 6), posicion = new Position(x = 10, y = 6))
+          new Halcon (sprite_bandera = "halcon_P1.png", lePerteneceA = jugador1_tanque, origen_bandera = new Position(x = 0, y = 6), posicion = new Position (x = 0, y = 6))
+        , new Halcon (sprite_bandera = "halcon_P2.png", lePerteneceA = jugador2_tanque, origen_bandera = new Position(x = 10, y = 6), posicion = new Position(x = 10, y = 6))
         ], 
 
         bases = [

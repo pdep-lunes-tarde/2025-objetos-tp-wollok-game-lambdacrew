@@ -15,38 +15,45 @@ class PowerUps {
         posicion = nuevaPosicion
     }
 
-    method aparecerPowerUp(){
-        const posicionAlAzar = new Position(x = 0.randomUpTo(juegoBattleCity.ancho() - 1), y = (juegoBattleCity.alto() - juegoBattleCity.alto().div(2)).randomUpTo(juegoBattleCity.alto() - 1))
-        self.position(posicionAlAzar)
-        game.sound("power_up_aparece.wav").play()
-        game.addVisual(self)
-    }
-
     method esAtravesable(entidad) = true
-
-    method powerUpTomado(){
-        game.sound("grabPowerUp.wav").play()
-        game.removeVisual(self)
-    }
+    method puedeSerDaniadoPorBala() = false
 
     method teChocoUnTanque (tanque) {
+
         self.efecto(tanque)
     }
 
+    method aparecerPowerUp(){
+
+        const posicionAlAzar = new Position(x = 0.randomUpTo(juegoBattleCity.ancho() - 1), y = (juegoBattleCity.alto().div(2)).randomUpTo(juegoBattleCity.alto() - 1))
+
+        self.position(posicionAlAzar)
+
+        game.sound("power_up_aparece.wav").play()
+        game.addVisual(self)
+
+    }
+
+    method powerUpTomado(){
+
+        game.sound("grabPowerUp.wav").play()
+        game.removeVisual(self)
+
+    }
+
+    
+
+
+
+
     method efecto(tanque) {}
-
-    method seguirA(unTanque) {}
-    method fueUrtadoPor(unTanque) {}
-    method recuperada(unTanque) {}
-    method dejarBanderaEnBase(unTanque) {}
-
 }
 
 object invertir_controles inherits PowerUps  {
     const player = [jugador1_tanque, jugador2_tanque]
 
     method image() {
-        return "pw_pala.png"
+        return "pw_marear.png"
     }
 
     override method efecto(tanqueQueAgarroElPower) {
@@ -55,9 +62,11 @@ object invertir_controles inherits PowerUps  {
 
         jugadorAfectado.controlesInvertidos(true)
 
+        game.say(jugadorAfectado, "Que mareoo")
+
         self.powerUpTomado()
 
-        game.schedule(5000, {jugadorAfectado.controlesInvertidos(false)})
+        game.schedule(5000, {jugadorAfectado.controlesInvertidos(false) game.say(jugadorAfectado, "Ya estoy bien")})
 
     }
 }
@@ -65,7 +74,7 @@ object invertir_controles inherits PowerUps  {
 object aumentar_balas inherits PowerUps {
 
     method image() {
-        return "1up.png"
+        return "pw_aumentar_balas.png"
     }
 
     override method efecto(tanqueQueAgarroElPower) {
@@ -97,27 +106,29 @@ object escudo inherits PowerUps {
 
     }
 }
-
-// SI 
+ 
 object pasarPorAgua inherits PowerUps {
 
     method image() {
-        return "pw_barco.png"
+        return "pw_bote.png"
     }
 
     override method efecto(tanqueQueAgarroElPower) {
+
         tanqueQueAgarroElPower.habilitarIrPorAgua(true)
         self.powerUpTomado()
+
     }
 }
 
 object aumentar_velocidad_balas inherits PowerUps {
 
     method image() {
-        return "pw_estrella.png"
+        return "pw_aumentar_velocidad_balas.png"
     }
 
     override method efecto (tanqueQueAgarroElPower) {
+
         tanqueQueAgarroElPower.aumentarVelocidadBala(1.max(tanqueQueAgarroElPower.velocidad_balas() - 20))
 
         tanqueQueAgarroElPower.hacerNuevoTickDisparo()
@@ -130,7 +141,7 @@ object aumentar_velocidad_balas inherits PowerUps {
 object romper_muros_irrompibles inherits PowerUps {
 
     method image() {
-        return "pw_granada.png"
+        return "pw_romper_muros_reforzados.png"
     }
 
     override method efecto (tanqueQueAgarroElPower) {
@@ -146,6 +157,7 @@ object spawnearPowerUps{
     const powerUpsDisponibles = [romper_muros_irrompibles, aumentar_velocidad_balas, invertir_controles, pasarPorAgua, escudo, aumentar_balas]
 
     method elegirUnPowerAlAzar() {
+        
         var aparecio = powerUpsDisponibles.anyOne()
         aparecio.aparecerPowerUp()
 

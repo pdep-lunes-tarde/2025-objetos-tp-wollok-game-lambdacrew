@@ -5,34 +5,44 @@ import bala.*
 import halcon.*
 import mapa.*
 import movimiento.*
+import finalizar_partida.*
 
 class TanqueJugador {
 
     var direccion = sinDireccion
     var sprite = "tank_up.png"
-    var rondas_ganadas = 0
+
+    var posicion = new Position()
+    var spawn = new Position()
+
+    var rondas_ganadas = 1
+
     var respawn = true
     var inmune = false
 
     var acuatico = false
-
-    var posicion = new Position()
-
-    const spawn = posicion
-
     var romper_murosReforzados = false
+    var controlesInvertidos = false
 
     var banderaQueLleva = null
     var lleva_una_bandera = false
 
-    var controlesInvertidos = false
-    
     const balas_activas_del_tanque = []
     var cargador = 1
     var velocidad_balas = 100
 
+    
+    // SPRITE TANQUES 
 
-    method banderaQueLleva() = banderaQueLleva
+    method image(){
+        return sprite
+    }
+
+    method image(nuevoSprite){
+        sprite = nuevoSprite
+    }
+
+    // HABILITAR ROMPER MUROS / CONTROLES INVERTIDOS / IR POR AGUA / SER INMUNE
 
     method romper_murosReforzados(valor) {
         romper_murosReforzados = valor
@@ -42,22 +52,28 @@ class TanqueJugador {
         controlesInvertidos = valor
     }
 
-    // SPRITE TANQUES 
-    method image(){
-        return sprite
-    }
-
-    method image(nuevoSprite){
-        sprite = nuevoSprite
-    }
-    // ANDAR POR AGUA
-
-    method irPorAgua() = acuatico
-
     method habilitarIrPorAgua(valor){
         acuatico = valor
     }
+
+    method cambiarEstadoInmunidad(estado){
+        inmune = estado
+    }
+
+
+    method irPorAgua() = acuatico
+    method banderaQueLleva() = banderaQueLleva
+    method inmune() = inmune
+    
+    method esAtravesable(entidad) = false
+    method puedeSerDaniadoPorBala() = true
+    
+    method chocarConObjetos () {
+        game.onCollideDo(self, {n => n.teChocoUnTanque(self)} )
+    }
+
     // POSICIONAMIENTO Y MOVIMIENTO EN EL TABLERO
+
     method position(){
         return posicion
     }
@@ -74,9 +90,9 @@ class TanqueJugador {
         return direccion
     }
 
-    /* method puedoMovermeEnEstaDireccion (unaOrientacion) {
-        return game.getObjectsIn(unaOrientacion.siguientePosicion(posicion)).all {unObj => unObj.esAtravesable(self)}
-    } */
+    method setearSpawn() {
+        spawn = posicion
+    }
 
     method posicionCorregida(posicionACorregir){
         const nuevaY = wraparound.aplicarA(posicionACorregir.y(), 0, juegoBattleCity.alto())
@@ -100,7 +116,9 @@ class TanqueJugador {
         }
         
     }
+
     // ATAQUE DISPARAR TANQUES
+
     method puedeDispararOtra() = balas_activas_del_tanque.size() < cargador
 
     method aumentarMunicionEn(valor){
@@ -123,7 +141,7 @@ class TanqueJugador {
 
     method disparar_de_tanques(){
         if(self.puedeDispararOtra()) {
-            const bala = new Bala(lePerteneceA = self, direccion = self.direccion(), posicion = self.position())  /* self.direccion().siguientePosicion(self.position() */
+            const bala = new Bala(lePerteneceA = self, direccion = self.direccion(), posicion = self.position())
 
             if (romper_murosReforzados) {
                 bala.habilitarRomperMurosReforzados(true)
@@ -135,7 +153,12 @@ class TanqueJugador {
             game.sound("tanque_disparando.wav").play()
         }
     }
-    // RESPAWN 
+
+
+
+
+    // RESPAWN -- (IDEA SUGERIDA, QUE AL SER DESTRUIDO TENER UNA  FLAG QUE INDIQUE TE DESTRUYERON Y TE POSICIONAN EN UNA POSICION FUERA DE LA VISTA DEL TABLERA CON ESA FLAG ACTIVADA PARA EVITAR MOVERTE Y QUE DISPARES)
+    
     method aRespawnear(){
         game.addVisual(self)
         posicion = spawn
@@ -151,11 +174,12 @@ class TanqueJugador {
         cargador = 1
         velocidad_balas = 100
         posicion = spawn
+        controlesInvertidos = false
+        romper_murosReforzados = false
     }
-    // PORTAR ESCUDO
 
 
-    method inmune() = inmune
+    
     // ROBAR, RECUPERAR Y SOLTAR BANDERA (HALCON)
 
     method llevaLaBanderaDeAlguien(){
@@ -178,7 +202,7 @@ class TanqueJugador {
         self.noLlevarUnaBandera()
     }
 
-    // GANAR RONDA Y SI ES TANGIBLE EL TANQUE
+    // GANAR RONDA
 
     method rondas_ganadas() = rondas_ganadas
 
@@ -186,7 +210,11 @@ class TanqueJugador {
         rondas_ganadas = rondas_ganadas + 1
     }
 
-    method esAtravesable(entidad) = false
+    method resetearRondasGanadas() {
+        rondas_ganadas = 0
+    }
+
+
 
     method explotar_tanque(unTanque){
         game.removeVisual(unTanque)
@@ -200,6 +228,8 @@ class TanqueJugador {
         borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala) 
 
         if (self != unaBala.lePerteneceA() && !inmune){
+            
+            self.explotar_tanque(self)
             
 
             if (respawn) {
@@ -217,37 +247,40 @@ class TanqueJugador {
             
                         
             else {  
-                if (verificar_finalizacion_partida.gano_alguien()){
-                    verificar_finalizacion_partida.mensaje_victoria()
-                }
-                else{
-
+                if (!verificar_finalizacion_partida.gano_alguien()){
+        
+                    reiniciar_mapa.recargar_escena(nivel1)
                     unaBala.lePerteneceA().ganar_ronda()
                     self.opcion_respawn(true)
-                    reiniciar_mapa.recargar_escena(nivel1)
 
+                }
+
+                else {
+                    verificar_finalizacion_partida.mensaje_victoria()
+
+                    musica_victoria.play()
+
+                    game.schedule(1000, {
+
+                        game.clear()
+
+                        
+                        game.addVisual(gameOver)
+
+                        gameOver.darle_su_nueva_posicion_tanques (unaBala.lePerteneceA())
+
+                        gameOver.mostrar_mensaje("El ganador es : " + unaBala.lePerteneceA())
+
+                        gameOver.volverAlMenu()
+
+                    })
                 }       
             }
 
-            self.explotar_tanque(self)
             self.normalizar()
-        }
-                 
+        }            
     }
 
-    // INTERACCIONES TANQUE CON OBJETOS DEL CAMPO
-
-    method chocarConObjetos () {
-        game.onCollideDo(self, {n => n.teChocoUnTanque(self)} )
-    }
-
-    method puedeSerDaniadoPorBala() = true
-
-    // SER INMUNE 
-
-    method cambiarEstadoInmunidad(estado){
-        inmune = estado
-    }
 }
        
 object jugador2_tanque inherits TanqueJugador () {
@@ -303,16 +336,11 @@ object jugador2_tanque inherits TanqueJugador () {
     }
 }
 
-
-
-
-
 object jugador1_tanque inherits TanqueJugador () {
 
     method actividad(){
             keyboard.f().onPressDo {
             self.disparar_de_tanques()
-            game.say(self, "Al ataque")
             }
 
             keyboard.d().onPressDo {
@@ -357,6 +385,3 @@ object jugador1_tanque inherits TanqueJugador () {
             })
     }
 }
-
-
-

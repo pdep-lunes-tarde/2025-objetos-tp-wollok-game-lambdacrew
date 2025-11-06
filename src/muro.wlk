@@ -3,8 +3,13 @@ import src.bala.*
 
 
 class Muro {
+
     const position
     var durabilidad = 3
+
+    method puedeSerDaniadoPorBala() = true
+
+    method esAtravesable(entidad) = false
 
     method position() {
         return position
@@ -14,20 +19,8 @@ class Muro {
         durabilidad = 3
     }
 
-    method puedeSerDaniadoPorBala() = true
-
-    method esAtravesable(entidad) = durabilidad < 1
-
-    method teImpactoLaBalaDe(elQueDisparo, unaBala) {
-        if(durabilidad > 1) {
-            durabilidad = durabilidad - unaBala.fuerza()
-            borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
-            game.sound("balas_chocando.wav").play()
-        }
-        else {
-            game.removeVisual(self)
-            borrar_balas.bala_logro_su_objetivo(elQueDisparo, unaBala)
-        }
+    method dibujarMuro(){
+        game.addVisual(self)
     }
 
     method recibirImpactoDeBala(unaBala) {
@@ -35,28 +28,17 @@ class Muro {
             durabilidad = durabilidad - unaBala.fuerza()
             borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala)
             game.sound("balas_chocando.wav").play()
+
         }
         else {
             game.removeVisual(self)
             borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala)
+            game.sound("balas_chocando.wav").play()
         }
     }
 
     
     method teChocoUnTanque(tanque) {}
-
-    method dibujarMuro(){
-        game.addVisual(self)
-    }
-
-    method efecto(unTanque) {}
-    method seguirA(unTanque) {}
-    method fueUrtadoPor(unTanque) {}
-    method recuperada(unTanque) {}
-    method dejarBanderaEnBase(unTanque) {}
-
-
-
 }
 
 class Muro_Ladrillos inherits Muro{
@@ -108,8 +90,6 @@ class Parche_De_Agua inherits Muro {
         return "agua.png"
     }
 
-    override method teImpactoLaBalaDe (elQueDisparo, unaBala) {}
-
     override method esAtravesable(entidad) = entidad.irPorAgua()
 
     override method puedeSerDaniadoPorBala() = false
@@ -117,6 +97,7 @@ class Parche_De_Agua inherits Muro {
 }
 
 class Arbustos {
+    
     const position
 
     method image() {
@@ -131,17 +112,10 @@ class Arbustos {
         game.addVisual(self)
     }
 
-    method noDejarloPasar(unTanque){}
-
     method esAtravesable(entidad) = true
 
     method puedeSerDaniadoPorBala() = false
 
     method teChocoUnTanque (tanque) {}
 
-    method efecto(unTanque) {}
-    method seguirA(unTanque) {}
-    method fueUrtadoPor(unTanque) {}
-    method recuperada(unTanque) {}
-    method dejarBanderaEnBase(unTanque) {}
 }

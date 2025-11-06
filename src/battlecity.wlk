@@ -6,8 +6,11 @@ import tanque_enemigo.*
 import mapa.*
 import halcon.*
 
+const jugadores = [jugador1_tanque, jugador2_tanque]
+const niveles = [nivel1, nivel2]
+
 object juegoBattleCity {
-    
+
     method ancho() {
         return 11
     }
@@ -32,27 +35,35 @@ object juegoBattleCity {
         game.onTick(jugador2_tanque.velocidad_balas(), "DesplazarBalasTanque2", {
             jugador2_tanque.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(jugador2_tanque) })
             })
-        
-                          /*  cargar_nivel.iniciar() */
 
         game.onTick(5000, "APARECE POWER UPS", {spawnearPowerUps.elegirUnPowerAlAzar()})
+
+
+        keyboard.backspace().onPressDo({
+
+            game.clear()
+
+            inicio_batalla.stop()
+
+            restaurar_mapa.regenerar()
+            jugadores.forEach({unTanque => unTanque.resetearRondasGanadas() unTanque.normalizar()})
+
+            detalles_menu.cargar(menu_seleccion_nivel, niveles)
+            game.addVisual(visualizacion_mapa)
+
+            menu_seleccion_nivel.retroceder()
+            
+            })
 
     }
 
     method jugar() {
+
         self.dibujarTablero()
 
-        detalles_menu.cargar(menu_jugabilidad, [modo_versus])
+        detalles_menu.cargar(imagen_menu_del_juego, [modo_versus, como_se_juega])
 
         game.start()
-    }
-
-    method iniciarJuego() {
-
-        self.dibujarTablero()
-
-        detalles_menu.cargar(menu_jugabilidad, [modo_versus])
-        detalles_menu.listar_opciones([modo_versus])
     }
 
     method reset() {
@@ -79,6 +90,12 @@ object detalles_menu {
         flecha.detectarQueOpcionElijo()
 
     }
+
+    method cargar_menu_estatico(menu_a_cargar) {
+
+        game.addVisual(menu_a_cargar)
+    }
+
 
     method listar_opciones (opciones) {
 
@@ -112,7 +129,7 @@ object cargar_nivel {
     }
 }
 
-object menu_jugabilidad {
+object imagen_menu_del_juego {
 
     const position = new Position()
 
@@ -125,31 +142,7 @@ object menu_jugabilidad {
     }
 }
 
-object menu_seleccion_nivel {
-    
-    const position = new Position()
 
-    method image() {
-        return "menu_inicial.png"
-    }
-
-    method position() {
-        return position
-    }
-}
-
-object visualizacion_mapa {
-
-    const position = new Position(x = 1, y = 4)
-
-    method image() {
-        return flecha.opcionSelecionada().visualizacion_previa()
-    }
-
-    method position() {
-        return position
-    }
-}
 
 
 
@@ -167,11 +160,11 @@ object flecha {
         return position
     }
 
-    method opcionSelecionada() = opcionSelecionada
-
     method position(nuevaPosicion) {
         position = nuevaPosicion
     }
+
+    method opcionSelecionada() = opcionSelecionada
 
     method desplazarFlecha() {
         keyboard.up().onPressDo {
@@ -202,17 +195,46 @@ object flecha {
 
 }
 
-object modo_versus {
+class Opciones_De_Menu {
 
-    const posicion = new Position (x = 5, y = 7 )
+    const posicion
+    const texto_nombre_de_opcion
+
+    const jugabilidades = [modo_versus, como_se_juega]
 
     method position() {
         return posicion
     }
 
     method image() {
-        return "el_modo_versus.png"
+        return texto_nombre_de_opcion
     }
+
+    method retrocederAEsteMenuDinamico(menu, opciones) {
+
+        keyboard.backspace().onPressDo({
+            
+            game.clear()
+
+            detalles_menu.cargar(menu, opciones)
+
+        })
+        
+
+    }
+
+    method retrocederAEsteMenuEstatico(menu) {
+        keyboard.backspace().onPressDo({
+            
+            game.clear()
+
+            detalles_menu.cargar_menu_estatico(menu)
+
+        })
+    }
+}
+
+object modo_versus inherits Opciones_De_Menu (posicion = new Position (x = 5, y = 7 ), texto_nombre_de_opcion = "logo_de_modo_versus.png" ) {
 
     method ejecutar() {
         
@@ -223,9 +245,82 @@ object modo_versus {
         detalles_menu.cargar(menu_seleccion_nivel, niveles)
         game.addVisual(visualizacion_mapa)
 
+        // menu_seleccion_nivel.retroceder()
+
+        self.retrocederAEsteMenuDinamico(imagen_menu_del_juego, jugabilidades)
+
+    }
+}
+
+object menu_seleccion_nivel {
+    
+    const position = new Position()
+
+    method image() {
+        return "menu_inicial.png"
     }
 
+    method position() {
+        return position
+    }
     
+    method retroceder() {
+
+        keyboard.backspace().onPressDo({
+            
+            game.clear()
+            detalles_menu.cargar(imagen_menu_del_juego, [modo_versus, como_se_juega])
+
+        })
+    }
+}
+
+object visualizacion_mapa {
+
+    const position = new Position(x = 1, y = 4)
+
+    method image() {
+        return flecha.opcionSelecionada().visualizacion_previa()
+    }
+
+    method position() {
+        return position
+    }
+}
+
+object como_se_juega inherits Opciones_De_Menu (posicion = new Position (x = 5, y = 5), texto_nombre_de_opcion = "logo_como_jugar.png") {
+
+    method ejecutar() {
+
+        game.clear()
+
+        detalles_menu.cargar_menu_estatico(pantalla_instrucciones)
+
+        pantalla_instrucciones.retroceder()
+
+    }
+}
+
+object pantalla_instrucciones {
+    
+    const position = new Position()
+
+    method image() {
+        return "menu_instrucciones_battlecCity.png" 
+    }
+
+    method position() {
+        return position
+    }
+
+    method retroceder() {
+
+        keyboard.backspace().onPressDo({
+            
+            detalles_menu.cargar(imagen_menu_del_juego, [modo_versus, como_se_juega])
+
+        })
+    }
 }
 
 object nada {
@@ -233,6 +328,7 @@ object nada {
     method visionPrevia() {
         return "flecha_juego.png"
     }
+
 }
 
 
