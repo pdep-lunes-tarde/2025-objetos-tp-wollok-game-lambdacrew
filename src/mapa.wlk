@@ -86,17 +86,20 @@ class Mapa {
     
 }
 object nivel1 inherits Mapa ( 
-    visualizacion_previa = "vista_previa_nivel1.png", 
+    visualizacion_previa = "nivel1_previsualizacion.png", 
     ubicacion_en_pantalla_de_seleccion = new Position (x = 5, y = 7),
     nombre_nivel = "campo_batalla_1.png",
 
     muros = [
           new Muro_Ladrillos(position = new Position(x = 0, y = 2))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 2))
         , new Muro_Ladrillos(position = new Position(x = 2, y = 2))
         , new Muro_Ladrillos(position = new Position(x = 2, y = 0))
         , new Muro_Ladrillos(position = new Position(x = 2, y = 1))
 
+
         , new Muro_Ladrillos(position = new Position(x = 8, y = 9))
+        , new Muro_Ladrillos(position = new Position(x = 8, y = 8))
         , new Muro_Ladrillos(position = new Position(x = 8, y = 7))
         , new Muro_Ladrillos(position = new Position(x = 9, y = 7))
         , new Muro_Ladrillos(position = new Position(x = 10, y = 7))
@@ -111,11 +114,21 @@ object nivel1 inherits Mapa (
         , new Muro_Ladrillos(position = new Position(x = 10, y = 4))
 
         , new Muro_Ladrillos(position = new Position(x = 5, y = 9))
-        , new Muro_Ladrillos(position = new Position(x = 5, y = 6))
-        , new Muro_Ladrillos(position = new Position(x = 5, y = 3))
+        , new Muro_Ladrillos(position = new Position(x = 5, y = 8))
+        , new Muro_Reforzado(position = new Position(x = 5, y = 6))
+        , new Muro_Reforzado(position = new Position(x = 5, y = 3))
         , new Muro_Ladrillos(position = new Position(x = 5, y = 1))
         , new Muro_Ladrillos(position = new Position(x = 5, y = 0))
+
         , new Muro_Reforzado(position = new Position(x = 2, y = 8))
+        , new Muro_Reforzado(position = new Position(x = 1, y = 8))
+        , new Muro_Reforzado(position = new Position(x = 2, y = 7))
+        , new Muro_Reforzado(position = new Position(x = 1, y = 7))
+
+        , new Muro_Reforzado(position = new Position(x = 9, y = 1))
+        , new Muro_Reforzado(position = new Position(x = 8, y = 1))
+        , new Muro_Reforzado(position = new Position(x = 9, y = 2))
+        , new Muro_Reforzado(position = new Position(x = 8, y = 2))
         ],
 
 
@@ -149,21 +162,21 @@ object nivel1 inherits Mapa (
         ],
 
     bases = [
-          new Base(lePerteneceA = jugador1_tanque, ubicacion = new Position(x=0,y=1))
-        , new Base(lePerteneceA = jugador2_tanque, ubicacion = new Position(x=10,y=8))
+          new Base(disenio_base = "base_P1.png", lePerteneceA = jugador1_tanque, ubicacion = new Position(x=0,y=1))
+        , new Base(disenio_base = "base_P2.png", lePerteneceA = jugador2_tanque, ubicacion = new Position(x=10,y=8))
         ]
 
     ) {
 
         override method dibujarMapa() {
 
-            self.setearInicioTanqueEnElMapa(new Position (x = 3, y = 3), new Position (x = 6, y = 6))
+            self.setearInicioTanqueEnElMapa(new Position (x = 4, y = 3), new Position (x = 6, y = 6))
             super()
         }
     }
 
 object nivel2 inherits Mapa (
-        visualizacion_previa = "vista_previa_nivel2.png", 
+        visualizacion_previa = "nivel2_previsualizacion.png", 
         ubicacion_en_pantalla_de_seleccion = new Position (x = 5, y = 5),
         nombre_nivel = "campo_batalla_2.png", 
 
@@ -246,8 +259,8 @@ object nivel2 inherits Mapa (
         ], 
 
         bases = [
-          new Base(lePerteneceA = jugador1_tanque, ubicacion = new Position(x = 0, y = 4))
-        , new Base(lePerteneceA = jugador2_tanque, ubicacion = new Position(x = 10, y = 4))
+          new Base(disenio_base = "base_P1.png", lePerteneceA = jugador1_tanque, ubicacion = new Position(x = 0, y = 4))
+        , new Base(disenio_base = "base_P2.png", lePerteneceA = jugador2_tanque, ubicacion = new Position(x = 10, y = 4))
         ], 
         
         parches_de_agua = [
@@ -266,6 +279,116 @@ object nivel2 inherits Mapa (
             override method dibujarMapa() {
 
             self.setearInicioTanqueEnElMapa(new Position (x = 1, y = 1), new Position (x = 9, y = 1))
+            super()
+        }
+        }
+
+object nivel3 inherits Mapa (
+        visualizacion_previa = "nivel3_previsualizacion.png", 
+        ubicacion_en_pantalla_de_seleccion = new Position (x = 5, y = 3),
+        nombre_nivel = "campo_batalla_2.png", 
+
+        muros = [
+          new Muro_Ladrillos(position = new Position(x = 0, y = 7))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 7))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 8))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 9))
+
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 0))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 1))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 2))
+        , new Muro_Ladrillos(position = new Position(x = 10, y = 2))
+
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 0))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 1))
+        , new Muro_Ladrillos(position = new Position(x = 1, y = 2))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 9))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 8))
+        , new Muro_Ladrillos(position = new Position(x = 9, y = 7))
+
+        , new Muro_Ladrillos(position = new Position(x = 4, y = 3))
+        , new Muro_Ladrillos(position = new Position(x = 4, y = 4))
+        , new Muro_Ladrillos(position = new Position(x = 4, y = 5))
+        , new Muro_Ladrillos(position = new Position(x = 4, y = 6))
+        , new Muro_Ladrillos(position = new Position(x = 5, y = 3))
+        , new Muro_Ladrillos(position = new Position(x = 5, y = 4))
+        , new Muro_Ladrillos(position = new Position(x = 5, y = 5))
+        , new Muro_Ladrillos(position = new Position(x = 5, y = 6))
+        , new Muro_Ladrillos(position = new Position(x = 6, y = 3))
+        , new Muro_Ladrillos(position = new Position(x = 6, y = 4))
+        , new Muro_Ladrillos(position = new Position(x = 6, y = 5))
+        , new Muro_Ladrillos(position = new Position(x = 6, y = 6))
+        
+        , new Muro_Reforzado(position = new Position(x = 0, y = 0))
+        , new Muro_Reforzado(position = new Position(x = 0, y = 1))
+        , new Muro_Reforzado(position = new Position(x = 0, y = 2))
+        , new Muro_Reforzado(position = new Position(x = 0, y = 3))
+        , new Muro_Reforzado(position = new Position(x = 0, y = 4))
+        , new Muro_Reforzado(position = new Position(x = 0, y = 5))
+        , new Muro_Reforzado(position = new Position(x = 0, y = 6))
+
+        , new Muro_Reforzado(position = new Position(x = 10, y = 9))
+        , new Muro_Reforzado(position = new Position(x = 10, y = 8))
+        , new Muro_Reforzado(position = new Position(x = 10, y = 7))
+        , new Muro_Reforzado(position = new Position(x = 10, y = 6))
+        , new Muro_Reforzado(position = new Position(x = 10, y = 5))
+        , new Muro_Reforzado(position = new Position(x = 10, y = 4))
+        , new Muro_Reforzado(position = new Position(x = 10, y = 3))
+
+        , new Muro_Reforzado(position = new Position(x = 2, y = 3))
+        , new Muro_Reforzado(position = new Position(x = 2, y = 6))
+        , new Muro_Reforzado(position = new Position(x = 8, y = 3))
+        , new Muro_Reforzado(position = new Position(x = 8, y = 6))
+        ], 
+
+        arbustos = [
+          new Arbustos(position = new Position(x = 1, y = 3))
+        , new Arbustos(position = new Position(x = 1, y = 6))
+        , new Arbustos(position = new Position(x = 3, y = 3))
+        , new Arbustos(position = new Position(x = 3, y = 6))
+        , new Arbustos(position = new Position(x = 4, y = 2))
+        , new Arbustos(position = new Position(x = 4, y = 7))
+        , new Arbustos(position = new Position(x = 5, y = 2))
+        , new Arbustos(position = new Position(x = 5, y = 7))
+        , new Arbustos(position = new Position(x = 6, y = 2))
+        , new Arbustos(position = new Position(x = 6, y = 7))
+        , new Arbustos(position = new Position(x = 7, y = 3))
+        , new Arbustos(position = new Position(x = 7, y = 6))
+        , new Arbustos(position = new Position(x = 9, y = 3))
+        , new Arbustos(position = new Position(x = 9, y = 6))
+        ], 
+
+        halcones = [
+          new Halcon (sprite_bandera = "halcon_P1.png", lePerteneceA = jugador1_tanque, origen_bandera = new Position(x = 0, y = 9), posicion = new Position (x = 0, y = 9))
+        , new Halcon (sprite_bandera = "halcon_P2.png", lePerteneceA = jugador2_tanque, origen_bandera = new Position(x = 10, y = 0), posicion = new Position(x = 10, y = 0))
+        ], 
+
+        bases = [
+          new Base(disenio_base = "base_P1.png", lePerteneceA = jugador1_tanque, ubicacion = new Position(x = 0, y = 8))
+        , new Base(disenio_base = "base_P2.png", lePerteneceA = jugador2_tanque, ubicacion = new Position(x = 10, y = 1))
+        ], 
+        
+        parches_de_agua = [
+          new Parche_De_Agua (position = new Position (x = 1 , y = 4 ))
+        , new Parche_De_Agua (position = new Position (x = 1 , y = 5 ))
+        , new Parche_De_Agua (position = new Position (x = 2 , y = 4 ))
+        , new Parche_De_Agua (position = new Position (x = 2 , y = 5 ))
+        , new Parche_De_Agua (position = new Position (x = 3 , y = 4 ))
+        , new Parche_De_Agua (position = new Position (x = 3 , y = 5 ))
+
+        , new Parche_De_Agua (position = new Position (x = 7 , y = 4 ))
+        , new Parche_De_Agua (position = new Position (x = 7 , y = 5 ))
+        , new Parche_De_Agua (position = new Position (x = 8 , y = 4 ))
+        , new Parche_De_Agua (position = new Position (x = 8 , y = 5 ))
+        , new Parche_De_Agua (position = new Position (x = 9 , y = 4 ))
+        , new Parche_De_Agua (position = new Position (x = 9 , y = 5 ))
+        ]
+        
+        ) {
+
+            override method dibujarMapa() {
+
+            self.setearInicioTanqueEnElMapa(new Position (x = 7, y = 8), new Position (x = 3, y = 1))
             super()
         }
         }

@@ -4,6 +4,20 @@ import tanque.*
 import movimiento.*
 import aura_escudo.*
 
+const aparecio_powerup = game.sound("power_up_aparece.wav")
+const powerup_reclamado = game.sound("grabPowerUp.wav")
+
+object hacerSonar {
+
+    method sonido(efectoSonido) {
+
+        efectoSonido.play()
+
+        game.schedule(1000, {efectoSonido.stop()})
+
+
+    }
+}
 class PowerUps {
     var posicion = new Position()
 
@@ -29,14 +43,16 @@ class PowerUps {
 
         self.position(posicionAlAzar)
 
-        game.sound("power_up_aparece.wav").play()
+        hacerSonar.sonido(aparecio_powerup)
+
         game.addVisual(self)
 
     }
 
     method powerUpTomado(){
 
-        game.sound("grabPowerUp.wav").play()
+        hacerSonar.sonido(powerup_reclamado)
+
         game.removeVisual(self)
 
     }
@@ -66,7 +82,7 @@ object invertir_controles inherits PowerUps  {
 
         self.powerUpTomado()
 
-        game.schedule(5000, {jugadorAfectado.controlesInvertidos(false) game.say(jugadorAfectado, "Ya estoy bien")})
+        game.schedule(7000, {jugadorAfectado.controlesInvertidos(false) game.say(jugadorAfectado, "Ya estoy bien")})
 
     }
 }

@@ -65,7 +65,7 @@ object gameOver {
 
             musica_victoria.stop()
             
-            detalles_menu.cargar(menu_seleccion_nivel, [nivel1,nivel2])
+            detalles_menu.cargar(menu_seleccion_nivel, niveles)
 
             game.addVisual(visualizacion_mapa)
 

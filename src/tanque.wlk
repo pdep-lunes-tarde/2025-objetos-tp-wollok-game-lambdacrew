@@ -7,10 +7,12 @@ import mapa.*
 import movimiento.*
 import finalizar_partida.*
 
+
+
 class TanqueJugador {
 
     var direccion = sinDireccion
-    var sprite = "tank_up.png"
+    var sprite
 
     var posicion = new Position()
     var spawn = new Position()
@@ -101,7 +103,7 @@ class TanqueJugador {
         return new Position(x = nuevaX, y = nuevaY)
     }
 
-    method nuevo_mover_tanque(unaOrientacion){
+    method mover_tanque(unaOrientacion){
         direccion = unaOrientacion
 
         if (controlesInvertidos) {
@@ -140,6 +142,9 @@ class TanqueJugador {
     } 
 
     method disparar_de_tanques(){
+
+        const tanque_disparando = game.sound("tanque_disparando.wav")
+
         if(self.puedeDispararOtra()) {
             const bala = new Bala(lePerteneceA = self, direccion = self.direccion(), posicion = self.position())
 
@@ -150,7 +155,9 @@ class TanqueJugador {
             balas_activas_del_tanque.add(bala)
             bala.dibujarBala()
 
-            game.sound("tanque_disparando.wav").play()
+            tanque_disparando.play()
+
+            game.schedule(500, {tanque_disparando.stop()})
         }
     }
 
@@ -176,6 +183,9 @@ class TanqueJugador {
         posicion = spawn
         controlesInvertidos = false
         romper_murosReforzados = false
+        banderaQueLleva = null
+        respawn = true
+        lleva_una_bandera = false
     }
 
 
@@ -217,14 +227,19 @@ class TanqueJugador {
 
 
     method explotar_tanque(unTanque){
+
+        const bala_impactando = game.sound("balas_chocando.wav")
+
         game.removeVisual(unTanque)
-        game.sound("balas_chocando.wav").play()
+        bala_impactando.play()
+
     }
 
     // COLISION DE BALA CON UN TANQUE - SI DEBE RESPAWNEAR y SOLTAR BANDERA o DESTRUIRSE
     method recibirImpactoDeBala(unaBala) {
         
         
+
         borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala) 
 
         if (self != unaBala.lePerteneceA() && !inmune){
@@ -250,6 +265,7 @@ class TanqueJugador {
                 if (!verificar_finalizacion_partida.gano_alguien()){
         
                     reiniciar_mapa.recargar_escena(nivel1)
+                    game.say(unaBala.lePerteneceA(), unaBala.lePerteneceA().rondas_ganadas().toString())
                     unaBala.lePerteneceA().ganar_ronda()
                     self.opcion_respawn(true)
 
@@ -259,6 +275,8 @@ class TanqueJugador {
                     verificar_finalizacion_partida.mensaje_victoria()
 
                     musica_victoria.play()
+
+                    game.removeTickEvent("APARECE POWER UPS")
 
                     game.schedule(1000, {
 
@@ -283,7 +301,7 @@ class TanqueJugador {
 
 }
        
-object jugador2_tanque inherits TanqueJugador () {
+object jugador2_tanque inherits TanqueJugador (sprite = "tankP2_right.png") {
         
     
     method actividad(){
@@ -292,22 +310,22 @@ object jugador2_tanque inherits TanqueJugador () {
             }
 
             keyboard.right().onPressDo {
-            self.nuevo_mover_tanque(derecha)
+            self.mover_tanque(derecha)
             self.mostrarSprite_jugador2(derecha)
             }
 
             keyboard.left().onPressDo {
-            self.nuevo_mover_tanque(izquierda)
+            self.mover_tanque(izquierda)
             self.mostrarSprite_jugador2(izquierda)
             }
 
             keyboard.down().onPressDo {
-            self.nuevo_mover_tanque(abajo)
+            self.mover_tanque(abajo)
             self.mostrarSprite_jugador2(abajo)
             }
 
             keyboard.up().onPressDo {
-            self.nuevo_mover_tanque(arriba)
+            self.mover_tanque(arriba)
             self.mostrarSprite_jugador2(arriba)
             }
 
@@ -336,7 +354,7 @@ object jugador2_tanque inherits TanqueJugador () {
     }
 }
 
-object jugador1_tanque inherits TanqueJugador () {
+object jugador1_tanque inherits TanqueJugador (sprite = "tank_left.png") {
 
     method actividad(){
             keyboard.f().onPressDo {
@@ -344,22 +362,22 @@ object jugador1_tanque inherits TanqueJugador () {
             }
 
             keyboard.d().onPressDo {
-            self.nuevo_mover_tanque(derecha)
+            self.mover_tanque(derecha)
             self.mostrarSprite_jugador1(derecha)
             }
 
             keyboard.a().onPressDo {
-            self.nuevo_mover_tanque(izquierda)
+            self.mover_tanque(izquierda)
             self.mostrarSprite_jugador1(izquierda)
             }
 
             keyboard.s().onPressDo {
-            self.nuevo_mover_tanque(abajo)
+            self.mover_tanque(abajo)
             self.mostrarSprite_jugador1(abajo)
             }
 
             keyboard.w().onPressDo {
-            self.nuevo_mover_tanque(arriba)
+            self.mover_tanque(arriba)
             self.mostrarSprite_jugador1(arriba)
             }
 

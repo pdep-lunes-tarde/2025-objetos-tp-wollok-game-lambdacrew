@@ -7,7 +7,8 @@ import mapa.*
 import halcon.*
 
 const jugadores = [jugador1_tanque, jugador2_tanque]
-const niveles = [nivel1, nivel2]
+const niveles = [nivel1, nivel2, nivel3]
+const jugabilidades = [modo_versus, como_se_juega]
 
 object juegoBattleCity {
 
@@ -61,7 +62,7 @@ object juegoBattleCity {
 
         self.dibujarTablero()
 
-        detalles_menu.cargar(imagen_menu_del_juego, [modo_versus, como_se_juega])
+        detalles_menu.cargar(imagen_menu_del_juego, jugabilidades)
 
         game.start()
     }
@@ -85,7 +86,7 @@ object detalles_menu {
         self.listar_opciones(opciones)
         game.addVisual(flecha)
 
-        flecha.desplazarFlecha()
+        flecha.desplazarFlechaPorLasOpciones(opciones)
 
         flecha.detectarQueOpcionElijo()
 
@@ -185,6 +186,25 @@ object flecha {
         }
     }
 
+    method desplazarFlechaPorLasOpciones(opciones) {
+        keyboard.up().onPressDo {
+            const nuevaPosicion = position.up(2)
+
+            if (nuevaPosicion.y() <= opciones.head().position().y() ) self.position(nuevaPosicion)
+        }
+
+        keyboard.down().onPressDo {
+            const nuevaPosicion = position.down(2)
+
+            if (nuevaPosicion.y() >= opciones.last().position().y() ) self.position(nuevaPosicion)
+        }
+
+        keyboard.enter().onPressDo {
+            opcionSelecionada.ejecutar()
+            self.position(new Position (x = 5, y = 7))
+        }
+    }
+
     method detectarQueOpcionElijo() {
 
         game.onCollideDo(self, {opcion => opcionSelecionada = opcion})
@@ -199,8 +219,6 @@ class Opciones_De_Menu {
 
     const posicion
     const texto_nombre_de_opcion
-
-    const jugabilidades = [modo_versus, como_se_juega]
 
     method position() {
         return posicion
@@ -237,15 +255,11 @@ class Opciones_De_Menu {
 object modo_versus inherits Opciones_De_Menu (posicion = new Position (x = 5, y = 7 ), texto_nombre_de_opcion = "logo_de_modo_versus.png" ) {
 
     method ejecutar() {
-        
-        const niveles = [nivel1, nivel2]
 
         game.clear()
 
         detalles_menu.cargar(menu_seleccion_nivel, niveles)
         game.addVisual(visualizacion_mapa)
-
-        // menu_seleccion_nivel.retroceder()
 
         self.retrocederAEsteMenuDinamico(imagen_menu_del_juego, jugabilidades)
 
@@ -269,7 +283,7 @@ object menu_seleccion_nivel {
         keyboard.backspace().onPressDo({
             
             game.clear()
-            detalles_menu.cargar(imagen_menu_del_juego, [modo_versus, como_se_juega])
+            detalles_menu.cargar(imagen_menu_del_juego, jugabilidades)
 
         })
     }
@@ -306,7 +320,7 @@ object pantalla_instrucciones {
     const position = new Position()
 
     method image() {
-        return "menu_instrucciones_battlecCity.png" 
+        return "menu_como_jugar.png" 
     }
 
     method position() {
@@ -317,7 +331,7 @@ object pantalla_instrucciones {
 
         keyboard.backspace().onPressDo({
             
-            detalles_menu.cargar(imagen_menu_del_juego, [modo_versus, como_se_juega])
+            detalles_menu.cargar(imagen_menu_del_juego, jugabilidades)
 
         })
     }

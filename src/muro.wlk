@@ -24,16 +24,16 @@ class Muro {
     }
 
     method recibirImpactoDeBala(unaBala) {
+
+        const muro_rompiendose = game.sound("balas_chocando.wav")
         if(durabilidad > 1) {
             durabilidad = durabilidad - unaBala.fuerza()
-            borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala)
-            game.sound("balas_chocando.wav").play()
+            entidad_impacto.conMuro(unaBala)
 
         }
         else {
             game.removeVisual(self)
-            borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala)
-            game.sound("balas_chocando.wav").play()
+            entidad_impacto.conMuro(unaBala)
         }
     }
 
@@ -118,4 +118,17 @@ class Arbustos {
 
     method teChocoUnTanque (tanque) {}
 
+}
+
+object entidad_impacto {
+
+    method conMuro (unaBala) {
+        const muro_rompiendose = game.sound("balas_chocando.wav")
+
+        borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala)
+        muro_rompiendose.play()
+
+        game.schedule(4000, {muro_rompiendose.stop()})
+
+    }
 }

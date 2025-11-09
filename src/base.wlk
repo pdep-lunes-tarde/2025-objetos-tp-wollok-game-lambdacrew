@@ -1,8 +1,11 @@
 class Base {
     var ubicacion
+
+    const disenio_base
+
     const lePerteneceA
 
-    method imagen(){}
+    method image() = disenio_base
 
     method position() = ubicacion
 
