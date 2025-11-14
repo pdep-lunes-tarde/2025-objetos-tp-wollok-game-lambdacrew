@@ -1,5 +1,5 @@
 class Base {
-    var ubicacion
+    const ubicacion
 
     const disenio_base
 
@@ -24,6 +24,8 @@ class Base {
             tanque.soltar_bandera()
         }
     }
+
+    method puedeCubrirme () = false
 
     
 }

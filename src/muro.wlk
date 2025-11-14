@@ -11,6 +11,8 @@ class Muro {
 
     method esAtravesable(entidad) = false
 
+    method durabilidad() = durabilidad
+
     method position() {
         return position
     }
@@ -25,7 +27,6 @@ class Muro {
 
     method recibirImpactoDeBala(unaBala) {
 
-        const muro_rompiendose = game.sound("balas_chocando.wav")
         if(durabilidad > 1) {
             durabilidad = durabilidad - unaBala.fuerza()
             entidad_impacto.conMuro(unaBala)
@@ -39,6 +40,8 @@ class Muro {
 
     
     method teChocoUnTanque(tanque) {}
+
+    method puedeCubrirme() = false
 }
 
 class Muro_Ladrillos inherits Muro{
@@ -94,6 +97,8 @@ class Parche_De_Agua inherits Muro {
 
     override method puedeSerDaniadoPorBala() = false
 
+    
+
 }
 
 class Arbustos {
@@ -116,19 +121,33 @@ class Arbustos {
 
     method puedeSerDaniadoPorBala() = false
 
+    method puedeCubrirme() = true
+
     method teChocoUnTanque (tanque) {}
 
+}
+
+object ocultarse {
+
+    method ocultar(entidad) {
+
+        entidad.image("invisible.png")
+    }
 }
 
 object entidad_impacto {
 
     method conMuro (unaBala) {
-        const muro_rompiendose = game.sound("balas_chocando.wav")
+      //  const muro_rompiendose = game.sound("balas_chocando.wav")
+
+      //  muro_rompiendose.play()
+
+      //  game.schedule(7000, {muro_rompiendose.stop()})
 
         borrar_balas.bala_logro_su_objetivo(unaBala.lePerteneceA(), unaBala)
-        muro_rompiendose.play()
+        
 
-        game.schedule(4000, {muro_rompiendose.stop()})
+       
 
     }
 }

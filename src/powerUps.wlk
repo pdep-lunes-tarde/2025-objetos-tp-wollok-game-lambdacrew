@@ -4,8 +4,9 @@ import tanque.*
 import movimiento.*
 import aura_escudo.*
 
-const aparecio_powerup = game.sound("power_up_aparece.wav")
-const powerup_reclamado = game.sound("grabPowerUp.wav")
+
+// const powerup_reclamado = game.sound("grabPowerUp.wav")
+// const aparecio_powerup = game.sound("power_up_aparece.wav")
 
 object hacerSonar {
 
@@ -41,6 +42,8 @@ class PowerUps {
 
         const posicionAlAzar = new Position(x = 0.randomUpTo(juegoBattleCity.ancho() - 1), y = (juegoBattleCity.alto().div(2)).randomUpTo(juegoBattleCity.alto() - 1))
 
+        const aparecio_powerup = game.sound("power_up_aparece.wav")
+
         self.position(posicionAlAzar)
 
         hacerSonar.sonido(aparecio_powerup)
@@ -51,11 +54,15 @@ class PowerUps {
 
     method powerUpTomado(){
 
+        const powerup_reclamado = game.sound("grabPowerUp.wav")
+
         hacerSonar.sonido(powerup_reclamado)
 
         game.removeVisual(self)
 
     }
+
+    method puedeCubrirme() = false
 
     
 
@@ -174,7 +181,8 @@ object spawnearPowerUps{
 
     method elegirUnPowerAlAzar() {
         
-        var aparecio = powerUpsDisponibles.anyOne()
+        const aparecio = powerUpsDisponibles.anyOne()
+
         aparecio.aparecerPowerUp()
 
         game.schedule(3000, {game.removeVisual(aparecio)})

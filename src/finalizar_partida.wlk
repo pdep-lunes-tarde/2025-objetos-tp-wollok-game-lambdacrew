@@ -1,12 +1,13 @@
 import battlecity.*
 import tanque.*
 import mapa.*
+import menus.*
 
 const musica_victoria = game.sound("finalizacion_partida.mp3")
 
 class Mensajes {
 
-    var mensajeADar
+    const mensajeADar
     const position
 
     method position() {
@@ -27,7 +28,6 @@ object gameOver {
     
 
     const positionGanador = new Position( x = 5 ,y = 4)
-    const positionPerdedor = new Position()
 
     method image() {
         return imagenPantalla
@@ -55,39 +55,30 @@ object gameOver {
 
         keyboard.backspace().onPressDo({
 
-            
+            musica_victoria.stop()
 
             game.clear()
 
-            restaurar_mapa.regenerar()
-
             jugadores.forEach ({unTanque => unTanque.normalizar() unTanque.resetearRondasGanadas()})
 
-            musica_victoria.stop()
-            
-            detalles_menu.cargar(menu_seleccion_nivel, niveles)
+            gestion_menues.cambiar_fondo_y_opciones("menu_inicial.png", niveles)
 
             game.addVisual(visualizacion_mapa)
 
-            menu_seleccion_nivel.retroceder()
-
-            
-
-            
-
-            
+            modo_versus.retrocederAEsteMenuDinamico("menu_inicial.png", jugabilidades)
 
         })
     }
 }
 
-object  reiniciar_mapa {
+object  resetear {
     
-    method recargar_escena(nivel) {
+    method ronda() {
 
-        game.schedule(5000, {juegoBattleCity.reset()})
+        game.schedule(5000, {gestion_niveles.nueva_ronda()})
 
     } 
+
 }
 
 object verificar_finalizacion_partida{

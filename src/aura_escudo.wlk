@@ -1,5 +1,5 @@
 class Aura_escudo {
-    var tanque
+    const tanque
 
     method position(){
         return tanque.position()
@@ -14,6 +14,8 @@ class Aura_escudo {
     }
 
     method puedeSerDaniadoPorBala() = false
+
+    method puedeCubrirme() = false
 
     method esAtravesable(entidad) = true
 

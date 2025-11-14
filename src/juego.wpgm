@@ -3,6 +3,6 @@ import wollok.game.*
 import tanque.*
 program juego {
     juegoBattleCity.jugar()
-
-    game.showAttributes(jugador1_tanque)
 }
+
+

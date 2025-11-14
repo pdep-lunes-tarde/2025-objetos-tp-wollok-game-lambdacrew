@@ -59,6 +59,7 @@ object sinDireccion {
         return posicion
     }
     
+    method controlInvertido() = self
 
     method imagenBala() = "bala_tanque.png"
 
@@ -85,7 +86,7 @@ object wraparound {
 object permitir_movimiento{
 
     method puedoMovermeEnEstaDireccion (entidad, unaOrientacion) {
-        return game.getObjectsIn(unaOrientacion.siguientePosicion(entidad.position())).all {unObj => unObj.esAtravesable(entidad)}
+        return game.getObjectsIn(unaOrientacion.siguientePosicion(entidad.position())).all {unObj => unObj.esAtravesable(entidad)} && !limitesMapa.fueraDeLosLimites(unaOrientacion.siguientePosicion(entidad.position()))
     }
 
     method noPuedoAvanzarPorQueHayUnMuro (entidad, unaOrientacion) {
@@ -97,6 +98,10 @@ object permitir_movimiento{
             }
     }
 
+    method mePuedoCubrir (entidad, unaOrientacion) {
+        return game.getObjectsIn(unaOrientacion.siguientePosicion(entidad.position())).any {unObj => unObj.puedeCubrirme()} 
+    }
+
 }
 
 object limitesMapa {
@@ -104,4 +109,11 @@ object limitesMapa {
     method teSalisteDeLosLimitesDelMapa (elemento) = 
         elemento.position().x() > juegoBattleCity.ancho() || elemento.position().x() < 0 ||
         elemento.position().y() > juegoBattleCity.alto() || elemento.position().y() < 0
+
+
+    method fueraDeLosLimites (posicionAControlar) =
+
+        posicionAControlar.x() >= juegoBattleCity.ancho() || posicionAControlar.x() < 0 ||
+        posicionAControlar.y() >= juegoBattleCity.alto() || posicionAControlar.y() < 0
+    
 }

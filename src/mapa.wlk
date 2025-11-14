@@ -4,8 +4,48 @@ import tanque_enemigo.*
 import tanque.*
 import halcon.*
 import base.*
+import menus.*
 
 const inicio_batalla = game.sound("inicio_partida.mp3")
+
+object gestion_niveles {
+
+  method regenerar_nivel(nivelARegenerar)
+  {
+    
+    nivelARegenerar.reHacerMuros()
+    nivelARegenerar.reubicarHalcon()
+
+  }
+
+  method cargar_nivel(nivelACargar) 
+  {
+
+    nivelACargar.dibujarMapa()
+
+    game.addVisual(jugador2_tanque)
+    game.addVisual(jugador1_tanque)
+
+    nivelACargar.dibujarDetalles()
+
+  }
+
+  method nueva_ronda()
+  {
+    game.clear()
+
+    const nivelActual = flecha.opcionSelecionada()
+
+    self.regenerar_nivel(nivelActual)
+    self.cargar_nivel(nivelActual)
+
+    jugador1_tanque.normalizar()
+    jugador2_tanque.normalizar()
+
+    juegoBattleCity.configurar()
+
+  } 
+}
 
 class Mapa {
 
@@ -35,14 +75,12 @@ class Mapa {
 
     method ejecutar () {
 
-        
-        
-
         game.clear()
 
         game.schedule(500, {inicio_batalla.play()})
 
-        cargar_nivel.iniciar(self)
+        gestion_niveles.cargar_nivel(self)
+        gestion_niveles.regenerar_nivel(self)
 
         juegoBattleCity.configurar()
 

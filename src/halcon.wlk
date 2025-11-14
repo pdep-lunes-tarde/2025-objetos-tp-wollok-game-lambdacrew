@@ -3,7 +3,7 @@ import src.battlecity.*
 
 class Halcon {
 
-    const sprite_bandera
+    const sprite_bandera = "halcon.png"
     var posicion = new Position(x = 4,y = 0 )
 
     const lePerteneceA
@@ -32,6 +32,8 @@ class Halcon {
     method lePerteneceA() = lePerteneceA
     
     method esAtravesable(entidad) = true
+
+    method puedeCubrirme () = false
 
     method restablecerUbicacion() {
         posicion = origen_bandera

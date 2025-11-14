@@ -6,10 +6,15 @@ import mapa.*
 class Bala {
 
     var posicion
-    var direccion
-    var lePerteneceA
+    const direccion
 
-    var fuerza = 1
+    var sprite = direccion.imagenBala()
+
+    var oculto = false
+
+    const lePerteneceA
+
+    const fuerza = 1
     var rompeMurosReforzados = false
 
     method position() {
@@ -17,8 +22,18 @@ class Bala {
     }
 
     method image(){
-        return direccion.imagenBala()
+
+        if (oculto) {
+            return "invisible.png"
+        }
+            return sprite
     }
+
+    method image(nuevaImagen){
+        sprite =  nuevaImagen
+    }
+
+    method oculto() =  oculto
 
     method orientacion_bala(){
         return direccion
@@ -42,16 +57,14 @@ class Bala {
 
     method rompeMurosReforzados() = rompeMurosReforzados
 
+    method cambiarOculto(valor){
+        oculto = valor
+    }
+
     
-    method moverBalasDe(unTanque){
+    method moverBalas(){
 
-        if (limitesMapa.teSalisteDeLosLimitesDelMapa(self)){
-            borrar_balas.bala_logro_su_objetivo(unTanque, self)
-        }
-
-        if(!permitir_movimiento.puedoMovermeEnEstaDireccion(self, self.orientacion_bala())){
-            permitir_movimiento.noPuedoAvanzarPorQueHayUnMuro(self, self.orientacion_bala())
-        }
+        acciones_balas.controlar_interacciones(self)
 
         const nuevaPosicion = direccion.siguientePosicion(posicion)
         posicion = nuevaPosicion
@@ -60,6 +73,8 @@ class Bala {
 
     method teChocoUnTanque (tanque) {}
 
+    method puedeCubrirme() = false
+
 }
 
 object borrar_balas {
@@ -67,5 +82,29 @@ object borrar_balas {
     method bala_logro_su_objetivo(elQueDisparo, unaBala){
         elQueDisparo.irBorrandoBalas(unaBala)
         game.removeVisual(unaBala)
+    }
+}
+
+object acciones_balas {
+
+    method controlar_interacciones(bala){
+
+        if (limitesMapa.teSalisteDeLosLimitesDelMapa(bala)){
+            borrar_balas.bala_logro_su_objetivo(bala.lePerteneceA(), bala)
+        }
+
+        if(!permitir_movimiento.puedoMovermeEnEstaDireccion(bala, bala.orientacion_bala())){
+            permitir_movimiento.noPuedoAvanzarPorQueHayUnMuro(bala, bala.orientacion_bala())
+        }
+
+        if (permitir_movimiento.mePuedoCubrir(bala, bala.orientacion_bala())) {
+            
+            bala.cambiarOculto(true) 
+        }
+
+        if (!permitir_movimiento.mePuedoCubrir(bala, bala.orientacion_bala())) {
+            
+            bala.cambiarOculto(false)
+        }
     }
 }

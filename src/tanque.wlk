@@ -12,7 +12,6 @@ import finalizar_partida.*
 class TanqueJugador {
 
     var direccion = sinDireccion
-    var sprite
 
     var posicion = new Position()
     var spawn = new Position()
@@ -31,20 +30,9 @@ class TanqueJugador {
 
     const balas_activas_del_tanque = []
     var cargador = 1
-    var velocidad_balas = 100
+    var velocidad_balas = 100 
 
-    
-    // SPRITE TANQUES 
-
-    method image(){
-        return sprite
-    }
-
-    method image(nuevoSprite){
-        sprite = nuevoSprite
-    }
-
-    // HABILITAR ROMPER MUROS / CONTROLES INVERTIDOS / IR POR AGUA / SER INMUNE
+    // HABILITAR ROMPER MUROS / CONTROLES INVERTIDOS / IR POR AGUA / SER INMUNE / COLISIONES CON OTROS OBJETOS Y SI ES ATRAVESABLE O PUEDE SER DANIADO POR BALAS
 
     method romper_murosReforzados(valor) {
         romper_murosReforzados = valor
@@ -66,6 +54,13 @@ class TanqueJugador {
     method irPorAgua() = acuatico
     method banderaQueLleva() = banderaQueLleva
     method inmune() = inmune
+    method bandera_que_lleva() = banderaQueLleva
+    method lleva_una_bandera() = lleva_una_bandera
+    method respawn() = respawn
+    method cargador() = cargador
+    method controlesInvertidos() = controlesInvertidos
+    method romper_murosReforzados() = romper_murosReforzados
+    
     
     method esAtravesable(entidad) = false
     method puedeSerDaniadoPorBala() = true
@@ -96,13 +91,6 @@ class TanqueJugador {
         spawn = posicion
     }
 
-    method posicionCorregida(posicionACorregir){
-        const nuevaY = wraparound.aplicarA(posicionACorregir.y(), 0, juegoBattleCity.alto())
-        const nuevaX = wraparound.aplicarA(posicionACorregir.x(), 0, juegoBattleCity.ancho())
-
-        return new Position(x = nuevaX, y = nuevaY)
-    }
-
     method mover_tanque(unaOrientacion){
         direccion = unaOrientacion
 
@@ -114,7 +102,8 @@ class TanqueJugador {
         if (permitir_movimiento.puedoMovermeEnEstaDireccion(self, direccion)){
 
             const nuevaPosicion = direccion.siguientePosicion(posicion)
-            posicion = self.posicionCorregida(nuevaPosicion)   
+            posicion = nuevaPosicion
+   
         }
         
     }
@@ -143,7 +132,7 @@ class TanqueJugador {
 
     method disparar_de_tanques(){
 
-        const tanque_disparando = game.sound("tanque_disparando.wav")
+        // const tanque_disparando = game.sound("tanque_disparando.wav")
 
         if(self.puedeDispararOtra()) {
             const bala = new Bala(lePerteneceA = self, direccion = self.direccion(), posicion = self.position())
@@ -155,19 +144,15 @@ class TanqueJugador {
             balas_activas_del_tanque.add(bala)
             bala.dibujarBala()
 
-            tanque_disparando.play()
+            // tanque_disparando.play()
 
-            game.schedule(500, {tanque_disparando.stop()})
+            // game.schedule(500, {tanque_disparando.stop()})
         }
     }
-
-
-
 
     // RESPAWN -- (IDEA SUGERIDA, QUE AL SER DESTRUIDO TENER UNA  FLAG QUE INDIQUE TE DESTRUYERON Y TE POSICIONAN EN UNA POSICION FUERA DE LA VISTA DEL TABLERA CON ESA FLAG ACTIVADA PARA EVITAR MOVERTE Y QUE DISPARES)
     
     method aRespawnear(){
-        game.addVisual(self)
         posicion = spawn
     }
 
@@ -178,17 +163,16 @@ class TanqueJugador {
     method normalizar(){
         inmune = false
         acuatico = false
-        cargador = 1
-        velocidad_balas = 100
-        posicion = spawn
         controlesInvertidos = false
         romper_murosReforzados = false
-        banderaQueLleva = null
-        respawn = true
         lleva_una_bandera = false
+        respawn = true
+
+        banderaQueLleva = null
+
+        cargador = 1
+        velocidad_balas = 100
     }
-
-
     
     // ROBAR, RECUPERAR Y SOLTAR BANDERA (HALCON)
 
@@ -202,7 +186,6 @@ class TanqueJugador {
     }
 
     method agarrarBandera(unaBandera){
-        // if(!unaBandera.aSidoCapturada())
         banderaQueLleva = unaBandera
         self.llevaLaBanderaDeAlguien()
     }
@@ -221,16 +204,17 @@ class TanqueJugador {
     }
 
     method resetearRondasGanadas() {
-        rondas_ganadas = 0
+        rondas_ganadas = 1
     }
 
-
+    // EXPLOTAR TANQUE
 
     method explotar_tanque(unTanque){
 
         const bala_impactando = game.sound("balas_chocando.wav")
 
-        game.removeVisual(unTanque)
+        unTanque.position(new Position(x = 12 , y = 12))
+
         bala_impactando.play()
 
     }
@@ -244,7 +228,7 @@ class TanqueJugador {
 
         if (self != unaBala.lePerteneceA() && !inmune){
             
-            self.explotar_tanque(self)
+            
             
 
             if (respawn) {
@@ -262,9 +246,10 @@ class TanqueJugador {
             
                         
             else {  
+                
                 if (!verificar_finalizacion_partida.gano_alguien()){
         
-                    reiniciar_mapa.recargar_escena(nivel1)
+                    resetear.ronda()
                     game.say(unaBala.lePerteneceA(), unaBala.lePerteneceA().rondas_ganadas().toString())
                     unaBala.lePerteneceA().ganar_ronda()
                     self.opcion_respawn(true)
@@ -277,11 +262,13 @@ class TanqueJugador {
                     musica_victoria.play()
 
                     game.removeTickEvent("APARECE POWER UPS")
+                    game.removeTickEvent("DesplazarBalasTanque2")
+                    game.removeTickEvent("DesplazarBalasTanque1")
+                    
 
                     game.schedule(1000, {
 
                         game.clear()
-
                         
                         game.addVisual(gameOver)
 
@@ -294,16 +281,22 @@ class TanqueJugador {
                     })
                 }       
             }
-
+            self.explotar_tanque(self)
             self.normalizar()
         }            
     }
 
+    method puedeCubrirme() = false
 }
        
-object jugador2_tanque inherits TanqueJugador (sprite = "tankP2_right.png") {
+object jugador2_tanque inherits TanqueJugador () {
         
-    
+    method image() {
+
+        return direccion.imagenTanque2()
+    }
+
+
     method actividad(){
             keyboard.p().onPressDo {
             self.disparar_de_tanques()
@@ -311,50 +304,50 @@ object jugador2_tanque inherits TanqueJugador (sprite = "tankP2_right.png") {
 
             keyboard.right().onPressDo {
             self.mover_tanque(derecha)
-            self.mostrarSprite_jugador2(derecha)
+
             }
 
             keyboard.left().onPressDo {
             self.mover_tanque(izquierda)
-            self.mostrarSprite_jugador2(izquierda)
+
             }
 
             keyboard.down().onPressDo {
             self.mover_tanque(abajo)
-            self.mostrarSprite_jugador2(abajo)
+
             }
 
             keyboard.up().onPressDo {
             self.mover_tanque(arriba)
-            self.mostrarSprite_jugador2(arriba)
+
             }
 
             self.chocarConObjetos()
 
-            self.mostrarSprite_jugador2(self.direccion())
     }
 
-    method mostrarSprite_jugador2(direccionElegida){
-        
-        if (controlesInvertidos){
-            self.image(direccionElegida.controlInvertido().imagenTanque2())
-        }
 
-        else {
-            self.image(direccionElegida.imagenTanque2())
-        }
-    }
 
     method hacerNuevoTickDisparo() {
         game.removeTickEvent("DesplazarBalasTanque2") 
 
         game.onTick(self.velocidad_balas(), "DesplazarBalasTanque2", {
-            self.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(self) })
+            self.balas_que_disparo_el_tanque().forEach({n => n.moverBalas() })
             })
     }
 }
 
-object jugador1_tanque inherits TanqueJugador (sprite = "tank_left.png") {
+object jugador1_tanque inherits TanqueJugador () {
+
+    method image() {
+
+        if (controlesInvertidos) {
+            return direccion.controlInvertido().imagenTanque1()
+        }
+
+        return direccion.imagenTanque1()
+    }
+
 
     method actividad(){
             keyboard.f().onPressDo {
@@ -363,43 +356,33 @@ object jugador1_tanque inherits TanqueJugador (sprite = "tank_left.png") {
 
             keyboard.d().onPressDo {
             self.mover_tanque(derecha)
-            self.mostrarSprite_jugador1(derecha)
+
             }
 
             keyboard.a().onPressDo {
             self.mover_tanque(izquierda)
-            self.mostrarSprite_jugador1(izquierda)
+
             }
 
             keyboard.s().onPressDo {
             self.mover_tanque(abajo)
-            self.mostrarSprite_jugador1(abajo)
+
             }
 
             keyboard.w().onPressDo {
             self.mover_tanque(arriba)
-            self.mostrarSprite_jugador1(arriba)
+
             }
 
             self.chocarConObjetos()
     }
 
-    method mostrarSprite_jugador1(direccionElegida){
-        
-        if (controlesInvertidos){
-            self.image(direccionElegida.controlInvertido().imagenTanque1())
-        }
-
-        else {
-            self.image(direccionElegida.imagenTanque1())
-        }
-    }
 
     method hacerNuevoTickDisparo() {
         game.removeTickEvent("DesplazarBalasTanque1") 
 
         game.onTick(self.velocidad_balas(), "DesplazarBalasTanque1", {
-            self.balas_que_disparo_el_tanque().forEach({n => n.moverBalasDe(self) })
+            self.balas_que_disparo_el_tanque().forEach({n => n.moverBalas() })
             })
     }
 }
