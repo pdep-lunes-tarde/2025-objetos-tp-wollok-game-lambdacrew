@@ -52,3 +52,6 @@ Battle Wollok esta inspirado en el juego de la NES Battle City, pero en este cas
 CONTROLES
 
 ![image](https://github.com/pdep-lunes-tarde/2025-objetos-tp-wollok-game-lambdacrew/blob/main/assets/menu_como_jugar.png)
+
+- Elegir opcion del menu -> **ENTER**
+- Volver atras / Salir del nivel -> **BACKSPACE**
