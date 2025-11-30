@@ -49,7 +49,7 @@ DESCRIPCION
 
 Battle Wollok esta inspirado en el juego de la NES Battle City, pero en este caso se realizo una version 1 contra 1, en el cual ambos jugadores buscaran capturar la bandera de su rival para poder eliminarlo y ganar la partida. El que gane 3 rondas sera el ganador de la partida
 
-![image](https://github.com/pdep-lunes-tarde/2025-objetos-tp-wollok-game-lambdacrew/blob/main/assetsnivel2_avance.png)
+![image](https://github.com/pdep-lunes-tarde/2025-objetos-tp-wollok-game-lambdacrew/blob/main/assets/nivel2_avance.png)
 
 CONTROLES
 
