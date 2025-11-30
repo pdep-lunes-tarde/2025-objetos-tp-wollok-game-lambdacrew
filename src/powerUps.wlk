@@ -40,7 +40,7 @@ class PowerUps {
 
     method aparecerPowerUp(){
 
-        const posicionAlAzar = new Position(x = 0.randomUpTo(juegoBattleCity.ancho() - 1), y = (juegoBattleCity.alto().div(2)).randomUpTo(juegoBattleCity.alto() - 1))
+        const posicionAlAzar = new Position(x = 0.randomUpTo(juegoBattleCity.ancho() - 1), y = 0.randomUpTo(juegoBattleCity.alto() - 1))
 
         const aparecio_powerup = game.sound("power_up_aparece.wav")
 

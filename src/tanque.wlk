@@ -341,10 +341,6 @@ object jugador1_tanque inherits TanqueJugador () {
 
     method image() {
 
-        if (controlesInvertidos) {
-            return direccion.controlInvertido().imagenTanque1()
-        }
-
         return direccion.imagenTanque1()
     }
 

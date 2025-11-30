@@ -324,7 +324,7 @@ object nivel2 inherits Mapa (
 object nivel3 inherits Mapa (
         visualizacion_previa = "nivel3_previsualizacion.png", 
         ubicacion_en_pantalla_de_seleccion = new Position (x = 5, y = 3),
-        nombre_nivel = "campo_batalla_2.png", 
+        nombre_nivel = "campo_batalla_3.png", 
 
         muros = [
           new Muro_Ladrillos(position = new Position(x = 0, y = 7))
