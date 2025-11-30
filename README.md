@@ -1,8 +1,11 @@
 # Grupo
 
-Nombre: **COMPLETAR ACA**
+Nombre: **LambdaCrew**
 
-Integrantes: **COMPLETAR ACA**
+Integrantes: 
+- **Kevin E. Suarez**
+- **Tomas Andres Arin**
+- **Martin Nicolas Witlis**
 
 # Consigna TP Integrador
 
@@ -40,8 +43,17 @@ De esa entrega vamos a ayudarles a decidir que agregar para la siguiente entrega
 
 En esta entrega se evaluará el uso de objetos en el tp. Debe haber presente al menos una persona del grupo ese día para la corrección, caso contrario se considera no entregado.
 
-# Juego: NOMBRE
+# Juego: BATTLE WOLLOK
 
 DESCRIPCION
 
+Battle Wollok esta inspirado en el juego de la NES Battle City, pero en este caso se realizo una version 1 contra 1, en el cual ambos jugadores buscaran capturar la bandera de su rival para poder eliminarlo y ganar la partida. El que gane 3 rondas sera el ganador de la partida
+
+![image](https://github.com/pdep-lunes-tarde/2025-objetos-tp-wollok-game-lambdacrew/blob/main/assets/nivel2_avance.png)
+
 CONTROLES
+
+![image](https://github.com/pdep-lunes-tarde/2025-objetos-tp-wollok-game-lambdacrew/blob/main/assets/menu_como_jugar.png)
+
+- Elegir opcion del menu -> **ENTER**
+- Volver atras / Salir del nivel -> **BACKSPACE**
